@@ -15,6 +15,10 @@ public:
 	bool getAI();
 	void setAI(bool b);
 	void generateDeck();
+
+	void addToDeck(Card* c);
+	void addToWins(Card* c);
+
 private:
 	bool _AI;
 	std::vector<Card*> _deck;

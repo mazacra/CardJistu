@@ -29,3 +29,13 @@ void Player::generateDeck()
 		_deck.push_back(c);
 	}
 }
+
+void Player::addToDeck(Card* c)
+{
+	_deck.push_back(c);
+}
+
+void Player::addToWins(Card* c)
+{
+	_wins.push_back(c);
+}
