@@ -23,6 +23,7 @@ private:
 	bool _AI;
 	std::vector<Card*> _deck;
 	std::vector<Card*> _wins;
+	Card* playedCard;
 };
 
 #endif // !PLAYER_H
