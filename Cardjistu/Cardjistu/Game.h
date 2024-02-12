@@ -11,7 +11,8 @@ public:
 
 	void newGame(bool solo);
 	void play();
-	Card carteGagnante(Card c1, Card c2);
+	Card* winningCard(Card* c1, Card* c2);
+	Player winningPlayer();
 
 private:
 	Player _p1;

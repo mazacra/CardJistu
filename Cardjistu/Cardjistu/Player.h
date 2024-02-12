@@ -16,6 +16,8 @@ public:
 	void setAI(bool b);
 	void generateDeck();
 
+	Card* getPlayedCard();
+
 	void addToDeck(Card* c);
 	void addToWins(Card* c);
 
@@ -23,7 +25,7 @@ private:
 	bool _AI;
 	std::vector<Card*> _deck;
 	std::vector<Card*> _wins;
-	Card* playedCard;
+	Card* _playedCard;
 };
 
 #endif // !PLAYER_H

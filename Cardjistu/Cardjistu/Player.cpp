@@ -30,6 +30,11 @@ void Player::generateDeck()
 	}
 }
 
+Card* Player::getPlayedCard()
+{
+	return _playedCard;
+}
+
 void Player::addToDeck(Card* c)
 {
 	_deck.push_back(c);
