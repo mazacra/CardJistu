@@ -7,16 +7,10 @@ public:
 	Afficher();
 	~Afficher();
 
+	void menuPrincipal();
+	void menuInformation();
 private:
 
 };
-
-Afficher::Afficher()
-{
-}
-
-Afficher::~Afficher()
-{
-}
 
 #endif // !AFFICHER_H
