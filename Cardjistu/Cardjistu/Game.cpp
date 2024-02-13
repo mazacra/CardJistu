@@ -14,6 +14,9 @@ void Game::newGame(bool solo)
 {
 	Player player1, player2;
 
+	player1.generateDeck();
+	player2.generateDeck();
+
 	if (solo)
 		player2.setAI(true);
 
