@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include "Card.h"
+#include "Element.h"
 
 Card::Card() 
 {
@@ -13,14 +14,14 @@ Card::~Card()
 	
 }
 
-int Card::getElement()
+Element Card::getElement()
 {
 	return _element;
 }
 
 void Card::setElement(int e)
 {
-	_element = e;
+	_element = (Element)e;
 }
 
 int Card::getNumber()
@@ -33,12 +34,12 @@ void Card::setNumber(int n)
 	_number = n;
 }
 
-int Card::getColor()
+Color Card::getColor()
 {
 	return _color;
 }
 
 void Card::setColor(int c)
 {
-	_color = c;
+	_color = (Color)c;
 }

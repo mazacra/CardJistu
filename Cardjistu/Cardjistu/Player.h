@@ -14,8 +14,10 @@ public:
 
 	bool getAI();
 	void setAI(bool b);
-	void generateDeck();
+	int getDeckSize();
+	Card* getCard(int i);
 
+	void generateDeck();
 	Card* getPlayedCard();
 
 	void addToDeck(Card* c);
