@@ -1,6 +1,8 @@
 #ifndef AFFICHER_H
 #define AFFICHER_H
 
+#include "Card.h"
+
 class Afficher
 {
 public:
@@ -9,6 +11,8 @@ public:
 
 	void menuPrincipal();
 	void menuInformation();
+	void menuSelection();
+	void infoCarte(Card* c);
 private:
 
 };
