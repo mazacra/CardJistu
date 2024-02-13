@@ -5,10 +5,10 @@
 
 int main()
 {
-	char choix;
+	char choix = ' ';
 	Game game;
 	Afficher show;
-	while (true)
+	while (choix != 'Q')
 	{
 		show.menuPrincipal();
 		std::cin >> choix;
@@ -25,7 +25,7 @@ int main()
 		{
 			int iChoix = choix - '0';
 
-			switch (choix)
+			switch (iChoix)
 			{
 			case 1:
 				game.newGame(false);
