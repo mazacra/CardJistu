@@ -19,6 +19,8 @@ int main()
 		if (choix == 'I') {
 			show.menuInformation();
 			std::cin >> choix;
+			if (choix == 'P')
+				show.menuPrincipal();
 		}
 
 		if(choix == '1' || choix == '2')
