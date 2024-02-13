@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <conio.h>
 
-#define OFFSET_Y 10
+#define OFFSET_Y 12
 
 Game::Game()
 {
@@ -58,7 +58,8 @@ void Game::play()
 
 			gotoxy(0, i + OFFSET_Y);
 			color(set[0]);
-			show.infoCarte(c);
+			//show.infoCarte(c);
+			c->afficherCard();
 
 			set[0] = 7;
 			color(set[0]);
@@ -71,13 +72,13 @@ Card* Game::winningCard(Card* c1, Card* c2)
 {
 	if (c1->getElement() == c2->getElement() && c1->getNumber() == c2->getNumber()) return nullptr;
 
-	if (c1->getElement() == 2 && c2->getElement() == 1) return c1;
-	if (c1->getElement() == 3 && c2->getElement() == 2) return c1;
-	if (c1->getElement() == 1 && c2->getElement() == 3) return c1;
+	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)1) return c1;
+	if (c1->getElement() == (Element)3 && c2->getElement() == (Element)2) return c1;
+	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)3) return c1;
 
-	if (c1->getElement() == 1 && c2->getElement() == 2) return c2;
-	if (c1->getElement() == 2 && c2->getElement() == 3) return c2;
-	if (c1->getElement() == 3 && c2->getElement() == 1) return c2;
+	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)2) return c2;
+	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)3) return c2;
+	if (c1->getElement() == (Element)3 && c2->getElement() == (Element)1) return c2;
 
 
 	if (c1->getNumber() > c2->getNumber()) return c1;

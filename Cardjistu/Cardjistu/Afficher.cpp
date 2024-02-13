@@ -57,7 +57,7 @@ void Afficher::menuSelection()
 	std::cout << "============================================================================" << std::endl << std::endl;
 }
 
-void Afficher::infoCarte(Card* c)
-{
-	std::cout << c->getColor() << " " << c->getElement() << " (" << c->getNumber() << ")" << std::endl;
-}
+//void Afficher::infoCarte(Card* c)
+//{
+//	std::cout << c->getColor() << " " << c->getElement() << " (" << c->getNumber() << ")" << std::endl;
+//}

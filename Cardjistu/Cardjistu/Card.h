@@ -5,7 +5,18 @@
 #define NUMBERS 10
 #define COLORS 4
 
-#include "Element.h"
+enum class Element {
+	fire,
+	water,
+	snow
+};
+
+enum class Color {
+	yellow,
+	red,
+	green,
+	blue
+};
 
 class Card
 {
@@ -20,9 +31,11 @@ public:
 	Color getColor();
 	void setColor(int c);
 
+	void afficherCard();
+
 private:
-	Element _element; //1 : fire, 2 : water, 3 : snow
-	int _number; //Nombres de 1 à 10
+	Element _element; //0 : fire, 1 : water, 2 : snow
+	int _number; //Nombres de 0 à 9
 	Color _color;
 };
 

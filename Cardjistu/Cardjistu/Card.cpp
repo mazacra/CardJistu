@@ -1,6 +1,7 @@
 #include <cstdlib>
+#include <iostream>
+#include <string>
 #include "Card.h"
-#include "Element.h"
 
 Card::Card() 
 {
@@ -42,4 +43,26 @@ Color Card::getColor()
 void Card::setColor(int c)
 {
 	_color = (Color)c;
+}
+
+void Card::afficherCard()
+{
+	std::string element;
+    switch (_element)
+    {
+	case Element::fire: element = "Fire"; break;
+	case Element::water: element = "Water"; break;
+	case Element::snow: element = "Snow"; break;
+    }
+
+	std::string color;
+	switch (_color)
+	{
+	case Color::yellow: color = "Yellow"; break;
+	case Color::red: color = "Red"; break;
+	case Color::green: color = "Green"; break;
+	case Color::blue: color = "Blue"; break;
+	}
+
+	std::cout << element << " " << color << " (" << _number << ")" << std::endl;
 }
