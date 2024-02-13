@@ -3,7 +3,9 @@
 
 #define ELEMENTS 3
 #define NUMBERS 10
-#define COLORS 5
+#define COLORS 4
+
+#include "Element.h"
 
 class Card
 {
@@ -11,17 +13,17 @@ public:
 	Card();
 	~Card();
 
-	int getElement();
+	Element getElement();
 	void setElement(int e);
 	int getNumber();
 	void setNumber(int n);
-	int getColor();
+	Color getColor();
 	void setColor(int c);
 
 private:
-	int _element; //1 : fire, 2 : water, 3 : snow
+	Element _element; //1 : fire, 2 : water, 3 : snow
 	int _number; //Nombres de 1 à 10
-	int _color;
+	Color _color;
 };
 
 #endif // !CARD_H

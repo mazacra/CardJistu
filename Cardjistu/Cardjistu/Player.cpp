@@ -21,6 +21,23 @@ void Player::setAI(bool b)
 	_AI = b;
 }
 
+int Player::getDeckSize()
+{
+	return _deck.size();
+}
+
+Card* Player::getCard(int i)
+{
+	try
+	{
+		return _deck[i];
+	}
+	catch (const std::exception&)
+	{
+		return nullptr;
+	}
+}
+
 void Player::generateDeck()
 {
 	for (int i = 0; i < STARTING_HAND; i++)
