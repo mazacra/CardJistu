@@ -89,6 +89,14 @@ int Game::selectCard(Player p)
 				set[0] = 7;
 				color(set[0]);
 			}
+
+for (int i = 0; i < _p1.getWinsSize(); i++)
+		{
+			Card* c = _p1.getCardWins(i);
+			gotoxy(50, i + OFFSET_Y);
+			c->afficherCard();
+		}
+
 			key = _getch();
 		}
 	}
