@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <string>
+#include <iostream>
 
 #define OFFSET_Y 12
 
@@ -39,6 +40,9 @@ void Game::play()
 
 	while (_winningPlayer == 0)
 	{
+		show.menuSelection();
+		afficherWins();
+
 		int iP1 = selectCard(_p1);
 		int iP2 = selectCard(_p2);
 
@@ -46,6 +50,10 @@ void Game::play()
 		_cp2 = _p2.getCard(iP2);
 
 		winningPlayer();
+		if (getWinner(_p1))
+			_winningPlayer = 1;
+		if (getWinner(_p2))
+			_winningPlayer = 2;
 
 		_p1.removeCard(iP1);
 		_p2.removeCard(iP2);
@@ -66,7 +74,6 @@ int Game::selectCard(Player p)
 		char key = 0;
 
 		while (true) {
-			show.menuSelection();
 			if (key == 72 && index > 0)
 				index--;
 			if (key == 80 && index < p.getDeckSize() - 1)
@@ -88,13 +95,6 @@ int Game::selectCard(Player p)
 
 				set[0] = 7;
 				color(set[0]);
-			}
-
-			for (int i = 0; i < _p1.getWinsSize(); i++)
-			{
-				Card* c = _p1.getCardWins(i);
-				gotoxy(50, i + OFFSET_Y);
-				c->afficherCard();
 			}
 
 			key = _getch();
@@ -154,11 +154,11 @@ bool Game::getWinner(Player p)
 				if (sF.find((int)c->getColor()) == std::string::npos)
 					sF += (int)c->getColor();
 			}
-			if (c->getElement() == (Element)0) {
+			if (c->getElement() == (Element)1) {
 				if (sW.find((int)c->getColor()) == std::string::npos)
 					sW += (int)c->getColor();
 			}
-			if (c->getElement() == (Element)0) {
+			if (c->getElement() == (Element)2) {
 				if (sS.find((int)c->getColor()) == std::string::npos)
 					sS += (int)c->getColor();
 			}
@@ -171,6 +171,29 @@ bool Game::getWinner(Player p)
 	}
 
 	return false;
+}
+
+void Game::afficherWins()
+{
+	gotoxy(50, OFFSET_Y - 2);
+	std::cout << "Player 1";
+
+	for (int i = 0; i < _p1.getWinsSize(); i++)
+	{
+		Card* c = _p1.getCardWins(i);
+		gotoxy(50, i + OFFSET_Y);
+		c->afficherCard();
+	}
+
+	gotoxy(70, OFFSET_Y - 2);
+	std::cout << "Player 2";
+
+	for (int i = 0; i < _p2.getWinsSize(); i++)
+	{
+		Card* c = _p2.getCardWins(i);
+		gotoxy(70, i + OFFSET_Y);
+		c->afficherCard();
+	}
 }
 
 void Game::color(int color)
