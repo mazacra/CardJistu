@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Afficher.h"
 #include "Card.h"
-#include "Element.h"
 
 Afficher::Afficher()
 {
