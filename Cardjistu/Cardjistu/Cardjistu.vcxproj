@@ -148,7 +148,6 @@
   <ItemGroup>
     <ClInclude Include="Afficher.h" />
     <ClInclude Include="Card.h" />
-    <ClInclude Include="Element.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>

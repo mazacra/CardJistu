@@ -35,43 +35,72 @@ void Game::newGame(bool solo)
 
 void Game::play()
 {
-	int index = 0;
-	int set[] = { 7, 7, 7 };
-	char key = 0;
 
 	while (_winningPlayer == 0)
 	{
-		show.menuSelection();
-		if (key == 72 && index > 0)
-			index--;
-		if (key == 80 && index < _p1.getDeckSize() - 1)
-			index++;
-		if (key == '\r')
-			break;
-		for (int i = 0; i < _p1.getDeckSize(); i++)
-		{
-			Card* c = _p1.getCard(i);
+		int iP1 = selectCard(_p1);
+		int iP2 = selectCard(_p2);
 
-			set[0] = 7;
-			if (index == i)
-				set[0] = 12;
+		_cp1 = _p1.getCard(iP1);
+		_cp2 = _p2.getCard(iP2);
 
-			gotoxy(0, i + OFFSET_Y);
-			color(set[0]);
-			c->afficherCard();
+		winningPlayer();
 
-			set[0] = 7;
-			color(set[0]);
-		}
+		_p1.removeCard(iP1);
+		_p2.removeCard(iP2);
+		_p1.drawCard();
+		_p2.drawCard();
+	}
+}
 
-		for (int i = 0; i < _p1.getWinsSize(); i++)
+int Game::selectCard(Player p)
+{
+	int index = 0;
+
+	if (p.getAI())
+		return p.AISelectCard();
+	else {
+
+		int set[] = { 7, 7, 7 };
+		char key = 0;
+
+		while (true) {
+			show.menuSelection();
+			if (key == 72 && index > 0)
+				index--;
+			if (key == 80 && index < p.getDeckSize() - 1)
+				index++;
+			if (key == '\r')
+				break;
+			for (int i = 0; i < p.getDeckSize(); i++)
+			{
+				Card* c = p.getCard(i);
+
+				set[0] = 7;
+				if (index == i)
+					set[0] = 12;
+
+				gotoxy(0, i + OFFSET_Y);
+				color(set[0]);
+
+				c->afficherCard();
+
+				set[0] = 7;
+				color(set[0]);
+			}
+
+for (int i = 0; i < _p1.getWinsSize(); i++)
 		{
 			Card* c = _p1.getCardWins(i);
 			gotoxy(50, i + OFFSET_Y);
 			c->afficherCard();
 		}
-		key = _getch();
+
+			key = _getch();
+		}
 	}
+
+	return index;
 }
 
 Card* Game::winningCard(Card* c1, Card* c2)
@@ -94,15 +123,15 @@ Card* Game::winningCard(Card* c1, Card* c2)
 
 Player Game::winningPlayer()
 {
-	Card* c = winningCard(_p1.getPlayedCard(), _p2.getPlayedCard());
+	Card* c = winningCard(_cp1, _cp2);
 
-	if (c == _p1.getPlayedCard())
+	if (c == _cp1)
 	{
 		_p1.addToWins(c);
 		return _p1;
 	}
 
-	if (c == _p2.getPlayedCard())
+	if (c == _cp2)
 	{
 		_p2.addToWins(c);
 		return _p2;

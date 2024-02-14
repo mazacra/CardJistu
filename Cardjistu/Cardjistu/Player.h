@@ -17,10 +17,18 @@ public:
 	int getDeckSize();
 	int getWinsSize();
 	Card* getCard(int i);
-	Card* getCardWins(int i);
+	void removeCard(int index);
+
+	int getHighest();
+	int getHighestFire();
+	int getHighestWater();
+	int getHighestSnow();
 
 	void generateDeck();
 	Card* getPlayedCard();
+	void drawCard();
+
+	int AISelectCard();
 
 	void addToDeck(Card* c);
 	void addToWins(Card* c);

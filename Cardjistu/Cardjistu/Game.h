@@ -12,6 +12,7 @@ public:
 
 	void newGame(bool solo);
 	void play();
+	int selectCard(Player p);
 	Card* winningCard(Card* c1, Card* c2);
 	Player winningPlayer();
 
@@ -22,6 +23,8 @@ private:
 	Afficher show;
 	Player _p1;
 	Player _p2;
+	Card* _cp1;
+	Card* _cp2;
 	int _winningPlayer = 0;
 };
 

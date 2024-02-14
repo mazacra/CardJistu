@@ -28,10 +28,10 @@ int main()
 			switch (iChoix)
 			{
 			case 1:
-				game.newGame(false);
+				game.newGame(true);
 				break;
 			case 2:
-				game.newGame(true);
+				game.newGame(false);
 				break;
 			}
 		}
