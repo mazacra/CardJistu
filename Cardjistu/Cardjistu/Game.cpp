@@ -90,12 +90,12 @@ int Game::selectCard(Player p)
 				color(set[0]);
 			}
 
-for (int i = 0; i < _p1.getWinsSize(); i++)
-		{
-			Card* c = _p1.getCardWins(i);
-			gotoxy(50, i + OFFSET_Y);
-			c->afficherCard();
-		}
+			for (int i = 0; i < _p1.getWinsSize(); i++)
+			{
+				Card* c = _p1.getCardWins(i);
+				gotoxy(50, i + OFFSET_Y);
+				c->afficherCard();
+			}
 
 			key = _getch();
 		}
@@ -108,13 +108,13 @@ Card* Game::winningCard(Card* c1, Card* c2)
 {
 	if (c1->getElement() == c2->getElement() && c1->getNumber() == c2->getNumber()) return nullptr;
 
+	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)0) return c1;
 	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)1) return c1;
-	if (c1->getElement() == (Element)3 && c2->getElement() == (Element)2) return c1;
-	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)3) return c1;
+	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)2) return c1;
 
+	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)1) return c2;
 	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)2) return c2;
-	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)3) return c2;
-	if (c1->getElement() == (Element)3 && c2->getElement() == (Element)1) return c2;
+	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)0) return c2;
 
 
 	if (c1->getNumber() > c2->getNumber()) return c1;
