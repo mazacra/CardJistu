@@ -15,6 +15,7 @@ public:
 	int selectCard(Player p);
 	Card* winningCard(Card* c1, Card* c2);
 	Player winningPlayer();
+	bool getWinner(Player p);
 
 	void color(int color);
 	void gotoxy(int x, int y);

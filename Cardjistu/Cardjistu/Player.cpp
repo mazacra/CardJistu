@@ -26,11 +26,28 @@ int Player::getDeckSize()
 	return _deck.size();
 }
 
+int Player::getWinsSize()
+{
+	return _wins.size();
+}
+
 Card* Player::getCard(int i)
 {
 	try
 	{
 		return _deck[i];
+	}
+	catch (const std::exception&)
+	{
+		return nullptr;
+	}
+}
+
+Card* Player::getCardWins(int i)
+{
+	try
+	{
+		return _wins[i];
 	}
 	catch (const std::exception&)
 	{

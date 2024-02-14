@@ -2,6 +2,7 @@
 #include "Card.h"
 #include <windows.h>
 #include <conio.h>
+#include <string>
 
 #define OFFSET_Y 12
 
@@ -128,6 +129,40 @@ Player Game::winningPlayer()
 		_p2.addToWins(c);
 		return _p2;
 	}
+}
+
+bool Game::getWinner(Player p)
+{
+	std::string sF = "";
+	std::string sW = "";
+	std::string sS = "";
+
+	if (p.getWinsSize() >= 3) {
+		for (int i = 0; i < p.getWinsSize(); i++)
+		{
+			Card* c = p.getCardWins(i);
+
+			if (c->getElement() == (Element)0) {
+				if (sF.find((int)c->getColor()) == std::string::npos)
+					sF += (int)c->getColor();
+			}
+			if (c->getElement() == (Element)0) {
+				if (sW.find((int)c->getColor()) == std::string::npos)
+					sW += (int)c->getColor();
+			}
+			if (c->getElement() == (Element)0) {
+				if (sS.find((int)c->getColor()) == std::string::npos)
+					sS += (int)c->getColor();
+			}
+
+			if (sF.size() > 0 && sW.size() > 0 && sS.size() > 0)
+				return true;
+			if (sF.size() > 2 || sW.size() > 2 || sS.size() > 2)
+				return true;
+		}
+	}
+
+	return false;
 }
 
 void Game::color(int color)
