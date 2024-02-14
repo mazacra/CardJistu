@@ -26,6 +26,11 @@ int Player::getDeckSize()
 	return _deck.size();
 }
 
+int Player::getWinsSize()
+{
+	return _wins.size();
+}
+
 Card* Player::getCard(int i)
 {
 	try

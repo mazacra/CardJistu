@@ -15,6 +15,7 @@ public:
 	bool getAI();
 	void setAI(bool b);
 	int getDeckSize();
+	int getWinsSize();
 	Card* getCard(int i);
 	void removeCard(int index);
 
