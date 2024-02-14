@@ -16,9 +16,18 @@ public:
 	void setAI(bool b);
 	int getDeckSize();
 	Card* getCard(int i);
+	void removeCard(int index);
+
+	int getHighest();
+	int getHighestFire();
+	int getHighestWater();
+	int getHighestSnow();
 
 	void generateDeck();
 	Card* getPlayedCard();
+	void drawCard();
+
+	int AISelectCard();
 
 	void addToDeck(Card* c);
 	void addToWins(Card* c);
