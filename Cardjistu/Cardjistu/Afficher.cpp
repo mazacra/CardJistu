@@ -45,8 +45,7 @@ void Afficher::menuInformation()
 	std::cout << "\t -Trois cartes du meme element;" << std::endl;
 	std::cout << "\tOU" << std::endl;
 	std::cout << "\t -Trois cartes d'un element different, chacune de couleur differente." << std::endl << std::endl;
-	std::cout << "Pour retourner au menu principal, inserez P" << std::endl;
-	std::cout << "Input : ";
+	std::cout << "Pour retourner au menu principal, appuyez sur n'importe quelle touche" << std::endl;
 }
 
 void Afficher::menuSelection()
@@ -58,7 +57,7 @@ void Afficher::menuSelection()
 	std::cout << "============================================================================" << std::endl << std::endl;
 }
 
-void Afficher::infoCarte(Card* c)
-{
-	std::cout << c->getColor() << " " << c->getElement() << " (" << c->getNumber() << ")" << std::endl;
-}
+//void Afficher::infoCarte(Card* c)
+//{
+//	std::cout << c->getColor() << " " << c->getElement() << " (" << c->getNumber() << ")" << std::endl;
+//}
