@@ -17,6 +17,7 @@ public:
 	Player winningPlayer();
 	bool getWinner(Player p);
 	void afficherWins();
+	void afficherTour();
 
 	void color(int color);
 	void gotoxy(int x, int y);
@@ -27,6 +28,7 @@ private:
 	Player _p2;
 	Card* _cp1;
 	Card* _cp2;
+	bool player;
 	int _winningPlayer = 0;
 };
 
