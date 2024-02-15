@@ -43,17 +43,46 @@ void Game::play()
 		show.menuSelection();
 		afficherWins();
 
+		system("CLS");
+		gotoxy(25, 5);
+		std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+		system("pause");
+		show.menuSelection();
+		afficherWins();
+
 		int iP1 = selectCard(_p1);
+
+		system("CLS"); 
+		gotoxy(25, 5);
+		std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+		system("pause");
+		show.menuSelection();
+		afficherWins();
 		int iP2 = selectCard(_p2);
 
 		_cp1 = _p1.getCard(iP1);
 		_cp2 = _p2.getCard(iP2);
 
+		system("CLS");
+		gotoxy(15, 5);
+		_cp1->afficherCard();
+		gotoxy(15, 6);
+		std::cout << "   VS   " << std::endl;
+		gotoxy(15, 7);
+		_cp2->afficherCard(); 
+		std::cout << std::endl << std::endl << std::endl;
+		system("pause");
+
 		winningPlayer();
+
 		if (getWinner(_p1))
+		{
 			_winningPlayer = 1;
+		}
 		if (getWinner(_p2))
+		{
 			_winningPlayer = 2;
+		}
 
 		_p1.removeCard(iP1);
 		_p2.removeCard(iP2);
@@ -131,12 +160,20 @@ Player Game::winningPlayer()
 	if (c == _cp1)
 	{
 		_p1.addToWins(c);
+		system("CLS");
+		gotoxy(25, 5);
+		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
+		system("pause");
 		return _p1;
 	}
 
 	if (c == _cp2)
 	{
 		_p2.addToWins(c);
+		system("CLS");
+		gotoxy(25, 5);
+		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
+		system("pause");
 		return _p2;
 	}
 }
