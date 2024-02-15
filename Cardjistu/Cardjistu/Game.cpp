@@ -60,6 +60,8 @@ void Game::play()
 		_p1.drawCard();
 		_p2.drawCard();
 	}
+
+	show.winner(_winningPlayer);
 }
 
 int Game::selectCard(Player p)

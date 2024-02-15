@@ -13,6 +13,7 @@ public:
 	void menuInformation();
 	void menuSelection();
 	void infoCarte(Card* c);
+	void winner(int i);
 private:
 
 };

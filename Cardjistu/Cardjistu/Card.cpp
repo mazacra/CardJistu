@@ -64,5 +64,5 @@ void Card::afficherCard()
 	case Color::blue: color = "Blue"; break;
 	}
 
-	std::cout << element << " " << color << " (" << _number << ")" << std::endl;
+	std::cout << element << " " << color << " (" << _number << ")    " << std::endl;
 }
