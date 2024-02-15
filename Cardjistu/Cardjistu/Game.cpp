@@ -49,11 +49,26 @@ void Game::play()
 		_cp1 = _p1.getCard(iP1);
 		_cp2 = _p2.getCard(iP2);
 
+		system("CLS");
+		gotoxy(15, 5);
+		_cp1->afficherCard();
+		gotoxy(15, 6);
+		std::cout << "   VS   " << std::endl;
+		gotoxy(15, 7);
+		_cp2->afficherCard(); 
+		std::cout << std::endl << std::endl << std::endl;
+		system("pause");
+
 		winningPlayer();
+
 		if (getWinner(_p1))
+		{
 			_winningPlayer = 1;
+		}
 		if (getWinner(_p2))
+		{
 			_winningPlayer = 2;
+		}
 
 		_p1.removeCard(iP1);
 		_p2.removeCard(iP2);
@@ -71,7 +86,7 @@ int Game::selectCard(Player p)
 	if (p.getAI())
 		return p.AISelectCard();
 	else {
-
+		afficherTour();
 		int set[] = { 7, 7, 7 };
 		char key = 0;
 
@@ -131,12 +146,20 @@ Player Game::winningPlayer()
 	if (c == _cp1)
 	{
 		_p1.addToWins(c);
+		system("CLS");
+		gotoxy(25, 5);
+		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
+		system("pause");
 		return _p1;
 	}
 
 	if (c == _cp2)
 	{
 		_p2.addToWins(c);
+		system("CLS");
+		gotoxy(25, 5);
+		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
+		system("pause");
 		return _p2;
 	}
 }
@@ -196,6 +219,23 @@ void Game::afficherWins()
 		gotoxy(70, i + OFFSET_Y);
 		c->afficherCard();
 	}
+}
+
+void Game::afficherTour()
+{
+	system("CLS");
+	gotoxy(25, 5);
+	if(player)
+		std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+	else
+		std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+
+	if(!_p2.getAI())
+		player = !player;
+
+	system("pause");
+	show.menuSelection();
+	afficherWins();
 }
 
 void Game::color(int color)
