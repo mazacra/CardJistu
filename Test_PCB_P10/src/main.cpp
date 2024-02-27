@@ -18,6 +18,7 @@ bool Bouton() {
         Serial.println("le bouton est enfoncé");
   }
   //return bouton;*/
+  //Serial.println(digitalRead(38));
   bool bouton = digitalRead(38);
   if(bouton == 1){
     Serial.println("le bouton est relevé");
@@ -160,14 +161,14 @@ bool Bouton() {
 
 int Segment7(int chiffre){
   
-  int segmentA = false;
-  int segmentB = false;
-  int segmentC = false;
-  int segmentD = false;
-  int segmentE = false;
-  int segmentF = false;
-  int segmentG = false;
-  int segmentPoint = false;
+  int segmentA = 1;
+  int segmentB = 1;
+  int segmentC = 1;
+  int segmentD = 1;
+  int segmentE = 1;
+  int segmentF = 1;
+  int segmentG = 1;
+  int segmentPoint = 1;
   //Serial.println(chiffre);
   if (!(0 <= chiffre && chiffre <= 9)){
     Serial.println("sortie");
@@ -177,7 +178,7 @@ int Segment7(int chiffre){
 
   switch(chiffre){
     case 0:
-    Serial.println(chiffre);
+    
       segmentA = 0;
       segmentB = 0;
       segmentC = 0;
@@ -189,7 +190,7 @@ int Segment7(int chiffre){
       break;
 
     case 1:
-    Serial.println(chiffre);
+    
       segmentA = 1;
       segmentB = 0;
       segmentC = 0;
@@ -577,8 +578,6 @@ void setup() {
 }*/
 void loop() {
   //bool etat = Bouton();
-  //printf("entrez un chiffre: ");
-  //scanf("%d", valeur);
   Joystick();
   Accel();
   /*digitalWrite(52, HIGH);
@@ -588,10 +587,11 @@ void loop() {
   Serial.println("Fermer");
   delay(3000);*/
 
-/*for(int i =0; i < 10; i++)
+/*
+for(int i =0; i < 10; i++)
 {
   Segment7(i);
   delay(1000);
 }
-*/
+//*/
 }
