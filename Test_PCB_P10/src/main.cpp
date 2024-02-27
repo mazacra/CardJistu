@@ -436,6 +436,8 @@ void Accel()
   int x_depart = analogRead(A2);
   int y_depart = analogRead(A3);
   int z_depart = analogRead(A4);
+  int i = 0;
+  /*
   Serial.print("x depart :");
   Serial.println(x_depart);
 
@@ -444,67 +446,92 @@ void Accel()
 
   Serial.print("z depart :");
   Serial.println(z_depart);
-
-  while(true) //Mettre un break pour sortir de la boucle
+  //*/
+  while(i < 3) //Mettre un break pour sortir de la boucle
   {
+    /*
     Serial.print("x depart:");
     Serial.println(x_depart);
     Serial.print("y depart:");
     Serial.println(y_depart);
     Serial.print("z depart:");
     Serial.println(z_depart);
+    */
 
     int x = analogRead(A2);
     int y = analogRead(A3);
     int z = analogRead(A4);
+    /*
     Serial.print("x:");
     Serial.println(x);
     Serial.print("y:");
     Serial.println(y);
     Serial.print("z:");
     Serial.println(z);
-
+    //*/
     //difference
     int dx = x_depart - x;
     int dy = y_depart - y;
     int dz = z_depart - z;
-    /*Serial.println(dx);
+    /*
+    Serial.println(dx);
     Serial.println(dy);
-    Serial.println(dz);*/
-    if (dx < -40) {
+    Serial.println(dz);
+    //*/
+    if (dx < -30) {
+      //*
       Serial.println(dx);
       Serial.println("mouvement x vers le bas");
+      //*/
       delay(delait);
-    }else if (dx > 40){
+      break;
+    }else if (dx > 30){
+      //*
       Serial.println(dx);
       Serial.println("mouvement x vers le haut");
+      //*/
       delay(delait);
+      break;
     }
 
-    if (dy < -40) {
+    if (dy < -30) {
+      //*
       Serial.println(dy);
       Serial.println("mouvement y vers le bas");
+      //*/
       delay(delait);
-    }else if (dy > 40){
+      break;
+    }else if (dy > 30){
+      //*
       Serial.println(dy);
       Serial.println("mouvement y vers le haut");
+      //*/
       delay(delait);
+      break;
     }
 
     if (dz < -10) {
+      //*
       Serial.println(dz);
       Serial.println("mouvement z vers le bas");
+      //*/
       delay(delait);
+      break;
     }else if (dz > 10){
+      //*
       Serial.println(dz);
       Serial.println("mouvement z vers le haut");
+      //*/
       delay(delait);
+      break;
     }
       x_depart = x;
       y_depart = y;
       z_depart = z;
 
     delay(500);
+    i++;
+    //Serial.println(i);
   }
 }  
 
@@ -553,7 +580,7 @@ void loop() {
   //printf("entrez un chiffre: ");
   //scanf("%d", valeur);
   Joystick();
-  //Accel();
+  Accel();
   /*digitalWrite(52, HIGH);
   Serial.println("Allumer");
   delay(3000);
