@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <stdio.h>
 
+int compt = 0;
 // put function definitions here:
 bool Bouton() {
 
@@ -20,7 +21,7 @@ bool Bouton() {
   //return bouton;*/
   //Serial.println(digitalRead(38));
   bool bouton = digitalRead(38);
-  if(bouton == 1){
+  if(digitalRead(38)){
     Serial.println("le bouton est relevé");
     return 1;
   }else{
@@ -298,8 +299,8 @@ int Segment7(int chiffre){
     digitalWrite(53, segmentF);
     digitalWrite(23, segmentG);
 
-    Serial.print("valeur à afficher:");
-    Serial.println(chiffre);
+    //Serial.print("valeur à afficher:");
+    //Serial.println(chiffre);
  return 1; 
 }
 
@@ -433,7 +434,7 @@ int z_depart;*/
 
 void Accel()
 {
-  int delait = 200;
+  int delait = 100;
   int x_depart = analogRead(A2);
   int y_depart = analogRead(A3);
   int z_depart = analogRead(A4);
@@ -479,14 +480,14 @@ void Accel()
     Serial.println(dy);
     Serial.println(dz);
     //*/
-    if (dx < -30) {
+    if (dx < -40) {
       //*
       Serial.println(dx);
       Serial.println("mouvement x vers le bas");
       //*/
       delay(delait);
       break;
-    }else if (dx > 30){
+    }else if (dx > 40){
       //*
       Serial.println(dx);
       Serial.println("mouvement x vers le haut");
@@ -495,14 +496,14 @@ void Accel()
       break;
     }
 
-    if (dy < -30) {
+    if (dy < -40) {
       //*
       Serial.println(dy);
       Serial.println("mouvement y vers le bas");
       //*/
       delay(delait);
       break;
-    }else if (dy > 30){
+    }else if (dy > 40){
       //*
       Serial.println(dy);
       Serial.println("mouvement y vers le haut");
@@ -511,14 +512,14 @@ void Accel()
       break;
     }
 
-    if (dz < -10) {
+    if (dz < -40) {
       //*
       Serial.println(dz);
       Serial.println("mouvement z vers le bas");
       //*/
       delay(delait);
       break;
-    }else if (dz > 10){
+    }else if (dz > 30){
       //*
       Serial.println(dz);
       Serial.println("mouvement z vers le haut");
@@ -530,7 +531,7 @@ void Accel()
       y_depart = y;
       z_depart = z;
 
-    delay(500);
+    delay(100);
     i++;
     //Serial.println(i);
   }
@@ -578,8 +579,16 @@ void setup() {
 }*/
 void loop() {
   //bool etat = Bouton();
+  if(!digitalRead(38)){
+    Serial.println("le bouton est enfoncé");
+    compt++;
+  }
+
+  if (compt > 9)
+    compt = 0;
   Joystick();
   Accel();
+  Segment7(compt);
   /*digitalWrite(52, HIGH);
   Serial.println("Allumer");
   delay(3000);
