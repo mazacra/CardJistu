@@ -496,14 +496,14 @@ void Accel()
       break;
     }
 
-    if (dy < -40) {
+    if (dy < -30) {
       //*
       Serial.println(dy);
       Serial.println("mouvement y vers le bas");
       //*/
       delay(delait);
       break;
-    }else if (dy > 40){
+    }else if (dy > 30){
       //*
       Serial.println(dy);
       Serial.println("mouvement y vers le haut");
