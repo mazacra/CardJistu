@@ -143,12 +143,15 @@
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Cardjistu.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="include\serial\SerialPort.cpp" />
     <ClCompile Include="Player.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Afficher.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="include\json.hpp" />
+    <ClInclude Include="include\serial\SerialPort.hpp" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
