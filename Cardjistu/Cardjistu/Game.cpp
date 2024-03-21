@@ -19,7 +19,8 @@ SerialPort* arduino;
 
 Game::Game()
 {
-
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.bVisible = false;
 }
 
 Game::~Game()
@@ -62,11 +63,10 @@ void Game::play()
 		show.menuSelection();
 		afficherWins();
 
-		int* iP;
-		iP = selectCard(_p1, _p2);
+		std::vector<int> l = selectCard(_p1, _p2);
 
-		_cp1 = _p1.getCard(iP[0]);
-		_cp2 = _p2.getCard(iP[1]);
+		_cp1 = _p1.getCard(l[0]);
+		_cp2 = _p2.getCard(l[1]);
 
 		system("CLS");
 		gotoxy(15, 5);
@@ -89,8 +89,8 @@ void Game::play()
 			_winningPlayer = 2;
 		}
 
-		_p1.removeCard(iP[0]);
-		_p2.removeCard(iP[1]);
+		_p1.removeCard(l[0]);
+		_p2.removeCard(l[1]);
 		_p1.drawCard();
 		_p2.drawCard();
 	}
@@ -98,20 +98,41 @@ void Game::play()
 	show.winner(_winningPlayer);
 }
 
-int* Game::selectCard(Player p1, Player p2)
+std::vector<int> Game::selectCard(Player p1, Player p2)
 {
-	std::string raw_msg;
-	int indexP1, indexP2 = 0;
+	char raw_msg[255];
+	int indexP1 = 0;
+	int indexP2 = 0;
 	json j_msg_rcv;
+	std::string str;
 
 	//afficherTour();
-	int cards[2] = { -1, -1 };
+	std::vector<int> cards = { -1, -1 };
 	int set[] = { 7, 7, 7 };
 	std::string joystick = "";
 	std::string accel = "";
 	std::string btn = "";
 
-	while (cards[0] == -1 && cards[1] == -1) {
+	//Print une première fois les carte du joueur 1
+	for (int i = 0; i < p1.getDeckSize(); i++)
+	{
+		Card* c = p1.getCard(i);
+
+		set[0] = 7;
+		if (indexP1 == i)
+			set[0] = 12;
+
+		gotoxy(0, i + OFFSET_Y);
+		color(set[0]);
+
+		c->afficherCard();
+
+		set[0] = 7;
+		color(set[0]);
+	}
+
+	while (cards[0] == -1 || cards[1] == -1) {
+		Sleep(100);
 		//Selection joueur 2
 		//Si le joueur à choisi sa carte on peut le skip
 		if (cards[1] == -1) {
@@ -148,40 +169,48 @@ int* Game::selectCard(Player p1, Player p2)
 
 		if (cards[0] == -1) {
 			j_msg_rcv.clear(); // effacer le message precedent
-			if (!RcvFromSerial(arduino, raw_msg)) {
-				std::cerr << "Erreur lors de la reception du message. " << std::endl;
-			}	
-			if (raw_msg.size() > 0) {
+			btn = "";
+			joystick = "";
+			accel = "";
+
+			if (arduino->readSerialPort(raw_msg, 255) != 0) {
+				str = raw_msg;
+
+				str = str.substr(0, str.find_last_of('\n') - 1);
+				str = str.substr(str.find_last_of('\n') + 1, str.length());
+
 				// Transfert du message en json
-				j_msg_rcv = json::parse(raw_msg);
+				if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+					j_msg_rcv = json::parse(str);
 
-				btn = j_msg_rcv["bouton"];
-				joystick = j_msg_rcv["JoyStick"];
-				accel = j_msg_rcv["accel"];
-			}
+					btn = j_msg_rcv["bouton"];
+					joystick = j_msg_rcv["JoyStick"];
+					accel = j_msg_rcv["accel"];
 
-			if (joystick == "jb" && indexP1 > 0)
-				indexP1--;
-			if (joystick == "jh" && indexP1 < p1.getDeckSize() - 1)
-				indexP1++;
-			if (btn == "On" || accel == "myb")
-				cards[1] = indexP1;
+					if (joystick == "jh" && indexP1 > 0)
+						indexP1--;
+					if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
+						indexP1++;
+					if (btn == "On" || accel == "myb")
+						cards[0] = indexP1;
 
-			for (int i = 0; i < p1.getDeckSize(); i++)
-			{
-				Card* c = p1.getCard(i);
+					for (int i = 0; i < p1.getDeckSize(); i++)
+					{
+						Card* c = p1.getCard(i);
 
-				set[0] = 7;
-				if (indexP1 == i)
-					set[0] = 12;
+						set[0] = 7;
+						if (indexP1 == i)
+							set[0] = 12;
 
-				gotoxy(0, i + OFFSET_Y);
-				color(set[0]);
+						gotoxy(0, i + OFFSET_Y);
+						color(set[0]);
 
-				c->afficherCard();
+						c->afficherCard();
 
-				set[0] = 7;
-				color(set[0]);
+						set[0] = 7;
+						color(set[0]);
+					}
+				}
 			}
 		}
 	}

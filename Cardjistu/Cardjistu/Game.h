@@ -1,6 +1,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <iostream>
 #include "Afficher.h"
 #include "Player.h"
 #include "include/serial/SerialPort.hpp"
@@ -14,7 +15,7 @@ public:
 
 	void newGame(bool solo);
 	void play();
-	int* selectCard(Player p1 ,Player p2);
+	std::vector<int> selectCard(Player p1 ,Player p2);
 	Card* winningCard(Card* c1, Card* c2);
 	Player winningPlayer();
 	bool getWinner(Player p);

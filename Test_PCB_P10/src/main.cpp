@@ -29,6 +29,11 @@ char* Bouton() {
     //Serial.println("le bouton est relevé");
     return "";
   }else{
+    while (!digitalRead(38))
+    {
+      /* code */
+    }
+    
     //Serial.println("le bouton est enfoncé");
     return "On";
   }
