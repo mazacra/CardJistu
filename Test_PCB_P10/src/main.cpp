@@ -6,13 +6,12 @@
 
 volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
 
-void sendMsg() {
+void sendMsg(char* J, char* A, char* B) {
   StaticJsonDocument<500> doc;
   // Elements du message
-  doc["time"] = millis();
-  doc["bouton"] = Bouton();
-  doc["JoyStick"] = Joystick();
-  doc["accel"] = Accel();
+  doc["bouton"] = B;
+  doc["JoyStick"] = J;
+  doc["accel"] = A;
 
   // Serialisation
   serializeJson(doc, Serial);
@@ -27,10 +26,10 @@ int compt = 0;
 char* Bouton() {
   bool bouton = digitalRead(38);
   if(digitalRead(38)){
-    Serial.println("le bouton est relevé");
-    return "Off";
+    //Serial.println("le bouton est relevé");
+    return "";
   }else{
-    Serial.println("le bouton est enfoncé");
+    //Serial.println("le bouton est enfoncé");
     return "On";
   }
 }
@@ -48,7 +47,7 @@ int Segment7(int chiffre){
   int segmentPoint = 1;
   //Serial.println(chiffre);
   if (!(0 <= chiffre && chiffre <= 9)){
-    Serial.println("sortie");
+    //Serial.println("sortie");
     return 0;
   }
   //Serial.println(chiffre);
@@ -192,49 +191,49 @@ char* Joystick(){
 
   if(xValue<bas and yValue<bas)
   {
-    Serial.println("bas droite");
+    //Serial.println("bas droite");
     return "jbd";
   }
 
   if(xValue<bas and yValue>=bas and yValue<=haut)
   {
-    Serial.println("droite");
+    //Serial.println("droite");
     return "jd";
   }
 
   if(xValue<bas and yValue>haut)
   {
-    Serial.println("haut droite");
+    //Serial.println("haut droite");
     return "jhd";
   }
 
   if(xValue>=bas and xValue<=haut and yValue<bas)
   {
-    Serial.println("bas");
+    //Serial.println("bas");
     return "jb";
   }
 
   if(xValue>=bas and xValue<=haut and yValue>haut)
   {
-    Serial.println("haut");
+    //Serial.println("haut");
     return "jh";
   }
 
   if(xValue>haut and yValue<bas)
   {
-    Serial.println("bas gauche");
+    //Serial.println("bas gauche");
     return "jbg";
   }
 
   if(xValue>haut and yValue>=bas and yValue<=haut)
   {
-    Serial.println("gauche");
+    //Serial.println("gauche");
     return "jg";
   }
 
   if(xValue>haut and yValue>haut)
   {
-    Serial.println("haut gauche");
+    //Serial.println("haut gauche");
     return "jhg";
   }
 
@@ -243,6 +242,8 @@ char* Joystick(){
   Serial.print("y:");
   Serial.println(yValue);*/
   delay(500);
+
+  return "";
 }
 
 
@@ -268,16 +269,16 @@ char* Accel()
     
     if (dx < -40) {
       //*
-      Serial.println(dx);
-      Serial.println("mouvement x vers le bas");
+      //Serial.println(dx);
+      //Serial.println("mouvement x vers le bas");
       //*/
       delay(delait);
       return "mxb";
       break;
     }else if (dx > 40){
       //*
-      Serial.println(dx);
-      Serial.println("mouvement x vers le haut");
+      //Serial.println(dx);
+      //Serial.println("mouvement x vers le haut");
       //*/
       delay(delait);
       return "mxh";
@@ -286,16 +287,16 @@ char* Accel()
 
     if (dy < -40) {
       //*
-      Serial.println(dy);
-      Serial.println("mouvement y vers le bas");
+      //Serial.println(dy);
+      //Serial.println("mouvement y vers le bas");
       //*/
       delay(delait);
       return "myb";
       break;
     }else if (dy > 40){
       //*
-      Serial.println(dy);
-      Serial.println("mouvement y vers le haut");
+      //Serial.println(dy);
+      //Serial.println("mouvement y vers le haut");
       //*/
       delay(delait);
       return "myh";
@@ -304,16 +305,16 @@ char* Accel()
 
     if (dz < -40) {
       //*
-      Serial.println(dz);
-      Serial.println("mouvement z vers le bas");
+      //Serial.println(dz);
+      //Serial.println("mouvement z vers le bas");
       //*/
       delay(delait);
       return "mzb";
       break;
     }else if (dz > 30){
       //*
-      Serial.println(dz);
-      Serial.println("mouvement z vers le haut");
+      //Serial.println(dz);
+      //Serial.println("mouvement z vers le haut");
       //*/
       delay(delait);
       return "mzh";
@@ -327,6 +328,8 @@ char* Accel()
     i++;
     //Serial.println(i);
   }
+
+  return "";
 }  
 
 
@@ -343,33 +346,28 @@ void setup() {
   pinMode(53, OUTPUT); //F
   pinMode(23, OUTPUT); //G
 }
-/*void setup() {
-  Serial.begin(9600);
-  pinMode(38, INPUT);
-  pinMode(22, OUTPUT); //A
-  pinMode(23, OUTPUT);
-  pinMode(24, OUTPUT);
-  pinMode(25, OUTPUT);
-  pinMode(50, OUTPUT);
-  pinMode(51, OUTPUT);
-  pinMode(52, OUTPUT);
-  pinMode(53, OUTPUT);
 
-}*/
 void loop() {
   //bool etat = Bouton();
   if(!digitalRead(38)){
-    Serial.println("le bouton est enfoncé");
+    //Serial.println("le bouton est enfoncé");
     compt++;
   }
 
   if (compt > 9)
     compt = 0;
-  Joystick();
-  Accel();
+
+  char* J = Joystick();
+  //char* A = Accel();
+  char* A = "";
+  char* B = Bouton();
+
+  if(J != "" || A != "" || B != "")
+    shouldSend_ = true;
+
   Segment7(compt);
 
   if(shouldSend_){
-    sendMsg();
+    sendMsg(J, A, B);
   }
 }

@@ -29,6 +29,14 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
+	const char* com = "COM3";
+	arduino = new SerialPort(com, BAUD);
+
+	if (!arduino->isConnected()) {
+		std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+		exit(1);
+	}
+
 	Player player1, player2;
 
 	player1.generateDeck();
@@ -95,13 +103,6 @@ int* Game::selectCard(Player p1, Player p2)
 	std::string raw_msg;
 	int indexP1, indexP2 = 0;
 	json j_msg_rcv;
-	std::string com = "COM3";
-	arduino = new SerialPort(com.c_str(), BAUD);
-
-	if (!arduino->isConnected()) {
-		std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
-		exit(1);
-	}
 
 	//afficherTour();
 	int cards[2] = { -1, -1 };
