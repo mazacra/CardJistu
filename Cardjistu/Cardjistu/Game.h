@@ -29,6 +29,7 @@ private:
 	Card* _cp1;
 	Card* _cp2;
 	bool player;
+	bool _solo;
 	int _winningPlayer = 0;
 };
 

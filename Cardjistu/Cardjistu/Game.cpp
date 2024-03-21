@@ -5,7 +5,16 @@
 #include <string>
 #include <iostream>
 
+#include "include/serial/SerialPort.hpp"
+#include "include/json.hpp"
+using json = nlohmann::json;
+
+#define BAUD 9600           // Frequence de transmission serielle
+#define MSG_MAX_SIZE 1024   // Longueur maximale d'un message
+
 #define OFFSET_Y 12
+
+SerialPort* arduino;
 
 Game::Game()
 {
@@ -25,6 +34,7 @@ void Game::newGame(bool solo)
 	player2.generateDeck();
 
 	_winningPlayer = 0;
+	_solo = solo;
 
 	if (solo)
 		player2.setAI(true);
@@ -81,7 +91,16 @@ void Game::play()
 
 int Game::selectCard(Player p)
 {
+	std::string raw_msg;
 	int index = 0;
+	json j_msg_rcv;
+	std::string com = "";
+	arduino = new SerialPort(com.c_str(), BAUD);
+
+	if (!arduino->isConnected()) {
+		std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+		exit(1);
+	}
 
 	if (p.getAI())
 		return p.AISelectCard();
@@ -114,7 +133,13 @@ int Game::selectCard(Player p)
 				color(set[0]);
 			}
 
-			key = _getch();
+			j_msg_rcv.clear(); // effacer le message precedent
+			if (!RcvFromSerial(arduino, raw_msg)) {
+				std::cerr << "Erreur lors de la reception du message. " << std::endl;
+			}
+
+			if(!_solo)
+				key = _getch();
 		}
 	}
 
@@ -249,4 +274,37 @@ void Game::gotoxy(int x, int y)
 	c.X = x;
 	c.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+bool RcvFromSerial(SerialPort* arduino, std::string& msg) {
+	// Return 0 if error
+	// Message output in msg
+	std::string str_buffer;
+	char char_buffer[MSG_MAX_SIZE];
+	int buffer_size;
+
+	msg.clear(); // clear string
+	// Read serialport until '\n' character (Blocking)
+
+	// Version fonctionnel dans VScode, mais non fonctionnel avec Visual Studio
+/*
+	while(msg.back()!='\n'){
+		if(msg.size()>MSG_MAX_SIZE){
+			return false;
+		}
+
+		buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
+		str_buffer.assign(char_buffer, buffer_size);
+		msg.append(str_buffer);
+	}
+*/
+
+// Version fonctionnelle dans VScode et Visual Studio
+	buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
+	str_buffer.assign(char_buffer, buffer_size);
+	msg.append(str_buffer);
+
+	//msg.pop_back(); //remove '/n' from string
+
+	return true;
 }
