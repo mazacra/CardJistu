@@ -10,6 +10,9 @@ void sendMsg() {
   StaticJsonDocument<500> doc;
   // Elements du message
   doc["time"] = millis();
+  doc["bouton"] = Bouton();
+  doc["JoyStick"] = Joystick();
+  doc["accel"] = Accel();
 
   // Serialisation
   serializeJson(doc, Serial);
@@ -21,30 +24,14 @@ void sendMsg() {
 
 int compt = 0;
 // put function definitions here:
-bool Bouton() {
-
-  /*bool dernier_etat = false;
-  bool bouton = digitalRead(38);
-  Serial.println("9");
-  if (bouton != dernier_etat){
-    bouton = !bouton;
-  }else{
-    dernier_etat = bouton;
-  }
-  if (bouton){
-    Serial.println("le bouton est relevé");
-  }else{
-        Serial.println("le bouton est enfoncé");
-  }
-  //return bouton;*/
-  //Serial.println(digitalRead(38));
+char* Bouton() {
   bool bouton = digitalRead(38);
   if(digitalRead(38)){
     Serial.println("le bouton est relevé");
-    return 1;
+    return "Off";
   }else{
     Serial.println("le bouton est enfoncé");
-    return 0;
+    return "On";
   }
 }
 
@@ -193,7 +180,7 @@ int Segment7(int chiffre){
  return 1; 
 }
 
-void Joystick(){
+char* Joystick(){
 
   int x_Axispin = A0;
   int y_Axispin = A1;
@@ -204,21 +191,52 @@ void Joystick(){
   int bas = 256;
 
   if(xValue<bas and yValue<bas)
+  {
     Serial.println("bas droite");
+    return "jbd";
+  }
+
   if(xValue<bas and yValue>=bas and yValue<=haut)
+  {
     Serial.println("droite");
+    return "jd";
+  }
+
   if(xValue<bas and yValue>haut)
+  {
     Serial.println("haut droite");
+    return "jhd";
+  }
+
   if(xValue>=bas and xValue<=haut and yValue<bas)
+  {
     Serial.println("bas");
+    return "jb";
+  }
+
   if(xValue>=bas and xValue<=haut and yValue>haut)
+  {
     Serial.println("haut");
+    return "jh";
+  }
+
   if(xValue>haut and yValue<bas)
+  {
     Serial.println("bas gauche");
+    return "jbg";
+  }
+
   if(xValue>haut and yValue>=bas and yValue<=haut)
+  {
     Serial.println("gauche");
+    return "jg";
+  }
+
   if(xValue>haut and yValue>haut)
+  {
     Serial.println("haut gauche");
+    return "jhg";
+  }
 
  /* Serial.print("x:");
   Serial.println(xValue);
@@ -228,7 +246,7 @@ void Joystick(){
 }
 
 
-void Accel()
+char* Accel()
 {
   int delait = 100;
   int x_depart = analogRead(A2);
@@ -254,6 +272,7 @@ void Accel()
       Serial.println("mouvement x vers le bas");
       //*/
       delay(delait);
+      return "mxb";
       break;
     }else if (dx > 40){
       //*
@@ -261,6 +280,7 @@ void Accel()
       Serial.println("mouvement x vers le haut");
       //*/
       delay(delait);
+      return "mxh";
       break;
     }
 
@@ -270,6 +290,7 @@ void Accel()
       Serial.println("mouvement y vers le bas");
       //*/
       delay(delait);
+      return "myb";
       break;
     }else if (dy > 40){
       //*
@@ -277,6 +298,7 @@ void Accel()
       Serial.println("mouvement y vers le haut");
       //*/
       delay(delait);
+      return "myh";
       break;
     }
 
@@ -286,6 +308,7 @@ void Accel()
       Serial.println("mouvement z vers le bas");
       //*/
       delay(delait);
+      return "mzb";
       break;
     }else if (dz > 30){
       //*
@@ -293,6 +316,7 @@ void Accel()
       Serial.println("mouvement z vers le haut");
       //*/
       delay(delait);
+      return "mzh";
       break;
     }
       x_depart = x;
