@@ -30,17 +30,18 @@ bool Bouton() {
   }
 }
 
-/*int Segment7(int chiffre){
+/*
+int Segment7(int chiffre){
   
-  int segmentA = false;
-  int segmentB = false;
-  int segmentC = false;
-  int segmentD = false;
-  int segmentE = false;
-  int segmentF = false;
-  int segmentG = false;
-  int segmentPoint = false;
-  if (!(0 <= chiffre <= 9)){
+  int segmentA = 1;
+  int segmentB = 1;
+  int segmentC = 1;
+  int segmentD = 1;
+  int segmentE = 1;
+  int segmentF = 1;
+  int segmentG = 1;
+  int segmentPoint = 1;
+  if (!(0 <= chiffre && chiffre <= 9)){
     return -1;
   }
 
@@ -144,22 +145,23 @@ bool Bouton() {
       segmentF = 0;
       segmentG = 0;
       segmentPoint = 0;
-
-    digitalWrite(22, segmentA);
-    digitalWrite(23, segmentB);
-    digitalWrite(24, segmentC);
-    digitalWrite(25, segmentPoint);
-    digitalWrite(50, segmentE);
-    digitalWrite(51, segmentD);
-    digitalWrite(52, segmentF);
-    digitalWrite(53, segmentG);
+  }
+    digitalWrite(52, segmentA);
+    digitalWrite(51, segmentB);
+    digitalWrite(50, segmentC);
+    digitalWrite(53, segmentPoint);
+    digitalWrite(24, segmentE);
+    digitalWrite(25, segmentD);
+    digitalWrite(22, segmentF);
+    digitalWrite(23, segmentG);
 
     Serial.print("valeur à afficher:");
     Serial.println(chiffre);
     return 0;  
-  }
-}*/
-
+  
+}
+*/
+//*
 int Segment7(int chiffre){
   
   int segmentA = 1;
@@ -179,7 +181,6 @@ int Segment7(int chiffre){
 
   switch(chiffre){
     case 0:
-    
       segmentA = 0;
       segmentB = 0;
       segmentC = 0;
@@ -191,7 +192,6 @@ int Segment7(int chiffre){
       break;
 
     case 1:
-    
       segmentA = 1;
       segmentB = 0;
       segmentC = 0;
@@ -221,8 +221,8 @@ int Segment7(int chiffre){
       segmentE = 1;
       segmentF = 1;
       segmentG = 0;
-      segmentPoint = 0;
-      break;   
+      segmentPoint = 0; 
+      break;  
   
     case 4:
       segmentA = 1;
@@ -291,19 +291,19 @@ int Segment7(int chiffre){
       break;
   }
     digitalWrite(52, segmentA);
-    digitalWrite(22, segmentB);
-    digitalWrite(24, segmentC);
-    digitalWrite(50, segmentPoint);
-    digitalWrite(51, segmentE);
+    digitalWrite(51, segmentB);
+    digitalWrite(50, segmentC);
+    digitalWrite(53, segmentPoint);
+    digitalWrite(24, segmentE);
     digitalWrite(25, segmentD);
-    digitalWrite(53, segmentF);
+    digitalWrite(22, segmentF);
     digitalWrite(23, segmentG);
 
     //Serial.print("valeur à afficher:");
     //Serial.println(chiffre);
  return 1; 
 }
-
+//*/
 void Joystick(){
 
   int x_Axispin = A0;
@@ -475,7 +475,7 @@ void Accel()
     int dx = x_depart - x;
     int dy = y_depart - y;
     int dz = z_depart - z;
-    /*
+    //*
     Serial.println(dx);
     Serial.println(dy);
     Serial.println(dz);
@@ -587,7 +587,7 @@ void loop() {
   if (compt > 9)
     compt = 0;
   Joystick();
-  Accel();
+  //Accel();
   Segment7(compt);
   /*digitalWrite(52, HIGH);
   Serial.println("Allumer");
