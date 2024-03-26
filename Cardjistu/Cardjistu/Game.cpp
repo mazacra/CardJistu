@@ -134,7 +134,7 @@ int Game::selectCardClavier(Player p)
 	if (p.getAI())
 		return p.AISelectCard();
 	else {
-		afficherTour();
+		playerTurn();
 		int set[] = { 7, 7, 7 };
 		char key = 0;
 
@@ -425,7 +425,7 @@ void Game::afficherWins()
 	}
 }
 
-void Game::afficherTour()
+void Game::playerTurn()
 {
 	system("CLS");
 	gotoxy(25, 5);

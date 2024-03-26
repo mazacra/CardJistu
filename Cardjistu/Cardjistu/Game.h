@@ -21,7 +21,7 @@ public:
 	Player winningPlayer();
 	bool getWinner(Player p);
 	void afficherWins();
-	void afficherTour();
+	void playerTurn();
 	std::string readSerial();
 
 	void color(int color);
