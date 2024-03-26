@@ -13,6 +13,7 @@ public:
 	void menuInformation();
 	void menuSelection();
 	void afficherCard(Card* c);
+	void afficherRoundTurn(int i);
 	void afficherRoundWinner(int i);
 	void winner(int i);
 private:

@@ -430,9 +430,11 @@ void Game::afficherTour()
 	system("CLS");
 	gotoxy(25, 5);
 	if (player)
-		std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+		//std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+		show.afficherRoundTurn(2);
 	else
-		std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+		//std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+		show.afficherRoundTurn(1);
 
 	if (!_p2.getAI())
 		player = !player;
