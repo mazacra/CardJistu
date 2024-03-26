@@ -30,9 +30,6 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
-	//const char* com = "COM3";
-	//arduino = new SerialPort(com, BAUD);
-
 	if (manette == TRUE)
 	{
 		const char* com = "COM3";
@@ -327,7 +324,8 @@ Player Game::winningPlayer()
 		_p1.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
-		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
+		//std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
+		show.afficherRoundWinner(1);
 
 		if (manette == FALSE)
 			system("pause");
@@ -350,7 +348,8 @@ Player Game::winningPlayer()
 		_p2.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
-		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
+		//std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
+		show.afficherRoundWinner(2);
 
 		if (manette == FALSE)
 			system("pause");

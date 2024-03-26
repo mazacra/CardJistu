@@ -78,6 +78,11 @@ void Afficher::afficherCard(Card* c)
 	std::cout << element << " " << color << " (" << c->getNumber() << ")    " << std::endl;
 }
 
+void Afficher::afficherRoundWinner(int i)
+{
+	std::cout << "P" << i << " gagne la manche!" << std::endl << std::endl << std::endl;
+}
+
 void Afficher::winner(int i)
 {
 	system("cls");
