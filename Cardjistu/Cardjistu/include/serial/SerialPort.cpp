@@ -18,17 +18,17 @@ SerialPort::SerialPort(const char *portName, int BAUD)
                                 OPEN_EXISTING,
                                 FILE_ATTRIBUTE_NORMAL,
                                 NULL);
-    //if (this->handler == INVALID_HANDLE_VALUE)
-    //{
-    //    if (GetLastError() == ERROR_FILE_NOT_FOUND)
-    //    {
-    //        std::cerr << "ERROR: Handle was not attached.Reason : " << portName << " not available\n";
-    //    }
-    //    else
-    //    {
-    //        std::cerr << "ERROR!!!\n";
-    //    }
-    //}
+    if (this->handler == INVALID_HANDLE_VALUE)
+    {
+        if (GetLastError() == ERROR_FILE_NOT_FOUND)
+        {
+            std::cerr << "ERROR: Handle was not attached.Reason : " << portName << " not available\n";
+        }
+        else
+        {
+            std::cerr << "ERROR!!!\n";
+        }
+    }
     else
     {
         DCB dcbSerialParameters = {0};
