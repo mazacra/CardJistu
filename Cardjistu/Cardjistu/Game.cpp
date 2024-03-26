@@ -30,12 +30,18 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
-	const char* com = "COM3";
-	arduino = new SerialPort(com, BAUD);
+	//const char* com = "COM3";
+	//arduino = new SerialPort(com, BAUD);
 
-	if (!arduino->isConnected()) {
-		std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
-		exit(1);
+	if (manette == TRUE)
+	{
+		const char* com = "COM3";
+		arduino = new SerialPort(com, BAUD);
+
+		if (!arduino->isConnected()) {
+			std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+			exit(1);
+		}
 	}
 
 	Player player1, player2;
@@ -66,7 +72,15 @@ void Game::play()
 		show.menuSelection();
 		afficherWins();
 
-		std::vector<int> l = selectCard(_p1, _p2);
+		std::vector<int> l = { -1, -1 };
+		if (manette == FALSE)
+		{
+			l[0] = selectCardClavier(_p1);
+			l[1] = selectCardClavier(_p2);
+		}
+
+		if (manette == TRUE) 
+			l = selectCardManette(_p1, _p2);
 
 		_cp1 = _p1.getCard(l[0]);
 		_cp2 = _p2.getCard(l[1]);
@@ -79,11 +93,19 @@ void Game::play()
 		gotoxy(15, 7);
 		show.afficherCard(_cp2);
 		std::cout << std::endl << std::endl << std::endl;
-		//system("pause");
-		while (str == "") {
-			Sleep(100);
-			if (arduino->readSerialPort(raw_msg, 255) != 0) {
-				str = raw_msg;
+		
+		if (manette == FALSE)
+			system("pause");
+
+		else if (manette == TRUE)
+		{
+			while (str == "") 
+			{
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) 
+				{
+					str = raw_msg;
+				}
 			}
 		}
 
@@ -108,7 +130,49 @@ void Game::play()
 	show.winner(_winningPlayer);
 }
 
-std::vector<int> Game::selectCard(Player p1, Player p2)
+int Game::selectCardClavier(Player p)
+{
+	int index = 0;
+
+	if (p.getAI())
+		return p.AISelectCard();
+	else {
+		afficherTour();
+		int set[] = { 7, 7, 7 };
+		char key = 0;
+
+		while (true) {
+			if (key == 72 && index > 0)
+				index--;
+			if (key == 80 && index < p.getDeckSize() - 1)
+				index++;
+			if (key == '\r')
+				break;
+			for (int i = 0; i < p.getDeckSize(); i++)
+			{
+				Card* c = p.getCard(i);
+
+				set[0] = 7;
+				if (index == i)
+					set[0] = 12;
+
+				gotoxy(0, i + OFFSET_Y);
+				color(set[0]);
+
+				show.afficherCard(c);
+
+				set[0] = 7;
+				color(set[0]);
+			}
+
+			key = _getch();
+		}
+	}
+
+	return index;
+}
+
+std::vector<int> Game::selectCardManette(Player p1, Player p2)
 {
 	char raw_msg[255];
 	int indexP1 = 0;
@@ -265,10 +329,16 @@ Player Game::winningPlayer()
 		gotoxy(25, 5);
 		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
 
-		while (str == "") {
-			Sleep(100);
-			if (arduino->readSerialPort(raw_msg, 255) != 0) {
-				str = raw_msg;
+		if (manette == FALSE)
+			system("pause");
+
+		if (manette == TRUE)
+		{
+			while (str == "") {
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+				}
 			}
 		}
 		//system("pause");
@@ -282,10 +352,16 @@ Player Game::winningPlayer()
 		gotoxy(25, 5);
 		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
 
-		while (str == "") {
-			Sleep(100);
-			if (arduino->readSerialPort(raw_msg, 255) != 0) {
-				str = raw_msg;
+		if (manette == FALSE)
+			system("pause");
+
+		if (manette == TRUE)
+		{
+			while (str == "") {
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+				}
 			}
 		}
 		//system("pause");
