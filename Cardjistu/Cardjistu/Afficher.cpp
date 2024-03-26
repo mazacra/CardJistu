@@ -56,6 +56,28 @@ void Afficher::menuSelection()
 	std::cout << "============================================================================" << std::endl << std::endl;
 }
 
+void Afficher::afficherCard(Card* c)
+{
+	std::string element;
+	switch (c->getElement())
+	{
+	case Element::fire: element = "Fire"; break;
+	case Element::water: element = "Water"; break;
+	case Element::snow: element = "Snow"; break;
+	}
+
+	std::string color;
+	switch (c->getColor())
+	{
+	case Color::yellow: color = "Yellow"; break;
+	case Color::red: color = "Red"; break;
+	case Color::green: color = "Green"; break;
+	case Color::blue: color = "Blue"; break;
+	}
+
+	std::cout << element << " " << color << " (" << c->getNumber() << ")    " << std::endl;
+}
+
 void Afficher::winner(int i)
 {
 	system("cls");

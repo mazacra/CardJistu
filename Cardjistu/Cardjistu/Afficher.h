@@ -12,7 +12,7 @@ public:
 	void menuPrincipal();
 	void menuInformation();
 	void menuSelection();
-	void infoCarte(Card* c);
+	void afficherCard(Card* c);
 	void winner(int i);
 private:
 

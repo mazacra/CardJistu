@@ -73,11 +73,11 @@ void Game::play()
 
 		system("CLS");
 		gotoxy(15, 5);
-		_cp1->afficherCard();
+		show.afficherCard(_cp1);
 		gotoxy(15, 6);
 		std::cout << "   VS   " << std::endl;
 		gotoxy(15, 7);
-		_cp2->afficherCard();
+		show.afficherCard(_cp2);
 		std::cout << std::endl << std::endl << std::endl;
 		//system("pause");
 		while (str == "") {
@@ -135,7 +135,7 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 		gotoxy(0, i + OFFSET_Y);
 		color(set[0]);
 
-		c->afficherCard();
+		show.afficherCard(c);
 
 		set[0] = 7;
 		color(set[0]);
@@ -167,7 +167,7 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 					gotoxy(0 + OFFSET_X, i + OFFSET_Y);
 					color(set[0]);
 
-					c->afficherCard();
+					show.afficherCard(c);
 
 					set[0] = 7;
 					color(set[0]);
@@ -220,7 +220,7 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 						gotoxy(0, i + OFFSET_Y);
 						color(set[0]);
 
-						c->afficherCard();
+						show.afficherCard(c);
 
 						set[0] = 7;
 						color(set[0]);
@@ -336,7 +336,7 @@ void Game::afficherWins()
 	{
 		Card* c = _p1.getCardWins(i);
 		gotoxy(50, i + OFFSET_Y);
-		c->afficherCard();
+		show.afficherCard(c);
 	}
 
 	gotoxy(70, OFFSET_Y - 2);
@@ -346,7 +346,7 @@ void Game::afficherWins()
 	{
 		Card* c = _p2.getCardWins(i);
 		gotoxy(70, i + OFFSET_Y);
-		c->afficherCard();
+		show.afficherCard(c);
 	}
 }
 

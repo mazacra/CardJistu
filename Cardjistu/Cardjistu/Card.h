@@ -31,7 +31,7 @@ public:
 	Color getColor();
 	void setColor(int c);
 
-	void afficherCard();
+	//void afficherCard();
 
 private:
 	Element _element; //0 : fire, 1 : water, 2 : snow
