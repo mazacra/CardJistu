@@ -189,6 +189,7 @@ char* Joystick(){
   int x_Axispin = A0;
   int y_Axispin = A1;
 
+
   int xValue = analogRead(x_Axispin);
   int yValue = analogRead(y_Axispin);
   int haut = 758;
@@ -246,7 +247,6 @@ char* Joystick(){
   Serial.println(xValue);
   Serial.print("y:");
   Serial.println(yValue);*/
-  delay(500);
 
   return "";
 }
@@ -375,4 +375,13 @@ void loop() {
   if(shouldSend_){
     sendMsg(J, A, B);
   }
+
+  while (J != "" || A != "" || B != "")
+  {
+    J = Joystick();
+    //char* A = Accel();
+    A = "";
+    B = Bouton();
+  }
+  
 }

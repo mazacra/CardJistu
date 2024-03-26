@@ -21,6 +21,7 @@ public:
 	bool getWinner(Player p);
 	void afficherWins();
 	void afficherTour();
+	std::string readSerial();
 
 	void color(int color);
 	void gotoxy(int x, int y);

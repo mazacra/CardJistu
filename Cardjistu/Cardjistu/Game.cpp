@@ -57,9 +57,12 @@ void Game::newGame(bool solo)
 
 void Game::play()
 {
+	char raw_msg[255];
+	std::string str = "";
 
 	while (_winningPlayer == 0)
 	{
+		str = "";
 		show.menuSelection();
 		afficherWins();
 
@@ -76,7 +79,14 @@ void Game::play()
 		gotoxy(15, 7);
 		_cp2->afficherCard();
 		std::cout << std::endl << std::endl << std::endl;
-		system("pause");
+		//system("pause");
+		while (str == "") {
+			Sleep(100);
+			if (arduino->readSerialPort(raw_msg, 255) != 0) {
+				str = raw_msg;
+			}
+		}
+
 
 		winningPlayer();
 
@@ -175,7 +185,12 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 
 			if (arduino->readSerialPort(raw_msg, 255) != 0) {
 				str = raw_msg;
-
+				if (str.find_last_of('\n') == std::string::npos) {
+					arduino->readSerialPort(raw_msg, 255);
+					str += raw_msg;
+				}
+				if (str[0] != '{')
+					str = str.substr(str.find_first_of("\n") + 1, str.length());
 				str = str.substr(0, str.find_last_of('\n') - 1);
 				str = str.substr(str.find_last_of('\n') + 1, str.length());
 
@@ -240,6 +255,8 @@ Card* Game::winningCard(Card* c1, Card* c2)
 Player Game::winningPlayer()
 {
 	Card* c = winningCard(_cp1, _cp2);
+	char raw_msg[255];
+	std::string str = "";
 
 	if (c == _cp1)
 	{
@@ -247,7 +264,14 @@ Player Game::winningPlayer()
 		system("CLS");
 		gotoxy(25, 5);
 		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
-		system("pause");
+
+		while (str == "") {
+			Sleep(100);
+			if (arduino->readSerialPort(raw_msg, 255) != 0) {
+				str = raw_msg;
+			}
+		}
+		//system("pause");
 		return _p1;
 	}
 
@@ -257,7 +281,14 @@ Player Game::winningPlayer()
 		system("CLS");
 		gotoxy(25, 5);
 		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
-		system("pause");
+
+		while (str == "") {
+			Sleep(100);
+			if (arduino->readSerialPort(raw_msg, 255) != 0) {
+				str = raw_msg;
+			}
+		}
+		//system("pause");
 		return _p2;
 	}
 }
