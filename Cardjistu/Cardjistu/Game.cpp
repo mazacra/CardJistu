@@ -30,16 +30,21 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
-	if (manette == TRUE)
-	{
+	//if (manette == TRUE)
+	//{
 		const char* com = "COM3";
 		arduino = new SerialPort(com, BAUD);
 
 		if (!arduino->isConnected()) {
-			std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
-			exit(1);
+			manette = FALSE;
+			//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+			//exit(1);
 		}
-	}
+		else
+		{
+			manette = TRUE;
+		}
+	//}
 
 	Player player1, player2;
 

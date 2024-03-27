@@ -38,7 +38,7 @@ private:
 	bool player;
 	bool _solo;
 	int _winningPlayer = 0;
-	bool manette = FALSE;
+	bool manette;
 
 };
 
