@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <stdio.h>
 #include <ArduinoJson.h>
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
 
 #define BAUD 9600
 
@@ -12,6 +12,7 @@
 
 volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
 volatile bool shouldRead_ = false;
+LiquidCrystal_I2C lcd(0x27, 20, 4);
 
 void serialEvent() { shouldRead_ = true; }
 
@@ -28,6 +29,43 @@ void sendMsg(char* J, char* A, char* B) {
   // Envoie
   Serial.println();
   shouldSend_ = false;
+}
+
+void PrintElement(int element){
+  switch (element)
+  {
+  case 0:
+    lcd.print("Feu");
+    break;
+  case 1:
+    lcd.print("Eau");
+    break;
+  case 2:
+    lcd.print("neige");
+    break;
+  default:
+    break;
+  }
+}
+
+void PrintCouleur(int couleur){
+  switch (couleur)
+  {
+  case 0:
+    lcd.print("Jaune");
+    break;
+  case 1:
+    lcd.print("Rouge");
+    break;
+  case 2:
+    lcd.print("Vert");
+    break;
+  case 3:
+    lcd.print("Bleu");
+    break;
+  default:
+    break;
+  }
 }
 
 int compt = 0;
@@ -375,17 +413,35 @@ void readMsg()  //ajouter les output des del
     return;
   }
   
-  parse_msg = doc["led"];
-  if (!parse_msg.isNull()) {
-    // mettre la led a la valeur doc["led"]
-    //digitalWrite(pinLED,doc["led"].as<bool>());
-    Del(doc["led"].as<int>());
-  }
-  parse_msg = doc["power"];
-  if (!parse_msg.isNull()) {
-    // mettre la led a la valeur doc["led"]
-    //digitalWrite(pinLED,doc["led"].as<bool>());
-    Segment7(doc["power"].as<int>());
+  parse_msg = doc["Element"];
+  if (!parse_msg.isNull())
+  {
+    int element = doc["Element"].as<int>();
+    int couleur = doc["Couleur"].as<int>();
+    int valeur = doc["Valeur"].as<int>();
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(valeur);
+
+    lcd.setCursor(0,1);
+    PrintElement(element);
+
+    lcd.setCursor(0,2);
+    PrintCouleur(couleur);
+  }else{
+    parse_msg = doc["led"];
+    if (!parse_msg.isNull()) {
+      // mettre la led a la valeur doc["led"]
+      //digitalWrite(pinLED,doc["led"].as<bool>());
+      Del(doc["led"].as<int>());
+    }
+    parse_msg = doc["power"];
+    if (!parse_msg.isNull()) {
+      // mettre la led a la valeur doc["led"]
+      //digitalWrite(pinLED,doc["led"].as<bool>());
+      Segment7(doc["power"].as<int>());
+    }
   }
 
 }
@@ -411,6 +467,8 @@ void setup() {
   pinMode(LED_BLEU, OUTPUT);
   //pinMode(LED_ROUGE, OUTPUT);
 
+  lcd.init();
+  lcd.backlight();
 }
 
 void loop() {

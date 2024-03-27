@@ -285,16 +285,28 @@ Card* Game::winningCard(Card* c1, Card* c2)
 	if (c1->getNumber() > c2->getNumber()) return c1;
 
 	if (c1->getNumber() < c2->getNumber()) return c2;
+
+	return nullptr;
 }
 
 Player Game::winningPlayer()
 {
+	json j_msg_send;
 	Card* c = winningCard(_cp1, _cp2);
 	char raw_msg[255];
 	json j_msg_rcv;
 	std::string str = "";
 	std::string joystick = "";
 	std::string btn = "";
+
+	if (c != nullptr) {
+
+		j_msg_send.clear();
+		j_msg_send["Element"] = (int)c->getElement();
+		j_msg_send["Couleur"] = (int)c->getColor();
+		j_msg_send["Valeur"] = c->getNumber();
+		Game::SendToSerial(arduino, j_msg_send);
+	}
 
 	if (c == _cp1)
 	{
@@ -345,6 +357,11 @@ Player Game::winningPlayer()
 		//system("pause");
 		return _p2;
 	}
+
+	system("CLS");
+	gotoxy(25, 5);
+	std::cout << "Aucun gagnant!" << std::endl << std::endl << std::endl;
+	return _p1;
 }
 
 bool Game::getWinner(Player p)
