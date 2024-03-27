@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <stdio.h>
 #include <ArduinoJson.h>
+#include <LiquidCrystal.h>
 
 #define BAUD 9600
 
