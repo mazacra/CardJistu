@@ -7,6 +7,8 @@
 #include "include/serial/SerialPort.hpp"
 #include "include/json.hpp"
 
+using json = nlohmann::json;
+
 class Game
 {
 public:
@@ -27,6 +29,7 @@ public:
 	void gotoxy(int x, int y);
 
 	bool RcvFromSerial(SerialPort* arduino, std::string& msg);
+	bool SendToSerial(SerialPort* arduino, json j_msg);
 
 private:
 	Afficher show;

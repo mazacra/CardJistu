@@ -4,7 +4,15 @@
 
 #define BAUD 9600
 
+#define LED_ROUGE 45
+#define LED_JAUNE 43
+#define LED_VERT 41
+#define LED_BLEU 39
+
 volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
+volatile bool shouldRead_ = false;
+
+void serialEvent() { shouldRead_ = true; }
 
 void sendMsg(char* J, char* A, char* B) {
   StaticJsonDocument<500> doc;
@@ -39,6 +47,38 @@ char* Bouton() {
   }
 }
 
+void Del(int del)
+{
+  switch (del)
+  {
+  case 0:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, HIGH);
+    break;
+  case 1:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, HIGH);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  case 2:
+    digitalWrite(LED_VERT, HIGH);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  case 3:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, HIGH);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  default:
+    break;
+  }
+}
 
 int Segment7(int chiffre){
   
@@ -66,29 +106,21 @@ int Segment7(int chiffre){
       segmentD = 0;
       segmentE = 0;
       segmentF = 0;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
     case 1:
     
-      segmentA = 1;
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
     case 2:
       segmentA = 0;
       segmentB = 0;
-      segmentC = 1;
       segmentD = 0;
       segmentE = 0;
-      segmentF = 1;
       segmentG = 0;
       segmentPoint = 0;
       break;
@@ -98,18 +130,13 @@ int Segment7(int chiffre){
       segmentB = 0;
       segmentC = 0;
       segmentD = 0;
-      segmentE = 1;
-      segmentF = 1;
       segmentG = 0;
       segmentPoint = 0;
       break;   
   
     case 4:
-      segmentA = 1;
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
       segmentF = 0;
       segmentG = 0;
       segmentPoint = 0;
@@ -117,10 +144,8 @@ int Segment7(int chiffre){
 
     case 5:
       segmentA = 0;
-      segmentB = 1;
       segmentC = 0;
       segmentD = 0;
-      segmentE = 1;
       segmentF = 0;
       segmentG = 0;
       segmentPoint = 0; 
@@ -128,7 +153,6 @@ int Segment7(int chiffre){
 
     case 6:
       segmentA = 0;
-      segmentB = 1;
       segmentC = 0;
       segmentD = 0;
       segmentE = 0;
@@ -141,10 +165,6 @@ int Segment7(int chiffre){
       segmentA = 0;
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
@@ -171,12 +191,12 @@ int Segment7(int chiffre){
       break;
   }
     digitalWrite(52, segmentA);
-    digitalWrite(22, segmentB);
-    digitalWrite(24, segmentC);
-    digitalWrite(50, segmentPoint);
-    digitalWrite(51, segmentE);
+    digitalWrite(51, segmentB);
+    digitalWrite(50, segmentC);
+    digitalWrite(53, segmentPoint);
+    digitalWrite(24, segmentE);
     digitalWrite(25, segmentD);
-    digitalWrite(53, segmentF);
+    digitalWrite(22, segmentF);
     digitalWrite(23, segmentG);
 
     //Serial.print("valeur à afficher:");
@@ -337,6 +357,38 @@ char* Accel()
   return "";
 }  
 
+void readMsg()  //ajouter les output des del
+{
+  // Lecture du message Json
+  StaticJsonDocument<500> doc;
+  JsonVariant parse_msg;
+
+  // Lecture sur le port Seriel
+  DeserializationError error = deserializeJson(doc, Serial);
+  shouldRead_ = false;
+
+  // Si erreur dans le message
+  if (error) {
+    Serial.print("deserialize() failed: ");
+    Serial.println(error.c_str());
+    return;
+  }
+  
+  parse_msg = doc["led"];
+  if (!parse_msg.isNull()) {
+    // mettre la led a la valeur doc["led"]
+    //digitalWrite(pinLED,doc["led"].as<bool>());
+    Del(doc["led"].as<int>());
+  }
+  parse_msg = doc["power"];
+  if (!parse_msg.isNull()) {
+    // mettre la led a la valeur doc["led"]
+    //digitalWrite(pinLED,doc["led"].as<bool>());
+    Segment7(doc["power"].as<int>());
+  }
+
+}
+
 
 void setup() {
   Serial.begin(9600);
@@ -350,37 +402,35 @@ void setup() {
   pinMode(25, OUTPUT); //D
   pinMode(53, OUTPUT); //F
   pinMode(23, OUTPUT); //G
+
+  //LED
+  pinMode(LED_ROUGE, OUTPUT);
+  pinMode(LED_JAUNE, OUTPUT);
+  pinMode(LED_VERT, OUTPUT);
+  pinMode(LED_BLEU, OUTPUT);
+  //pinMode(LED_ROUGE, OUTPUT);
+
 }
 
 void loop() {
-  //bool etat = Bouton();
-  if(!digitalRead(38)){
-    //Serial.println("le bouton est enfoncé");
-    compt++;
-  }
-
-  if (compt > 9)
-    compt = 0;
-
   char* J = Joystick();
-  //char* A = Accel();
-  char* A = "";
+  char* A = Accel();
   char* B = Bouton();
 
   if(J != "" || A != "" || B != "")
     shouldSend_ = true;
 
-  Segment7(compt);
-
   if(shouldSend_){
     sendMsg(J, A, B);
+  }
+  if(shouldRead_){
+    readMsg();
   }
 
   while (J != "" || A != "" || B != "")
   {
     J = Joystick();
-    //char* A = Accel();
-    A = "";
+    A = Accel();
     B = Bouton();
   }
   

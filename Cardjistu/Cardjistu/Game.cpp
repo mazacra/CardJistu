@@ -59,10 +59,16 @@ void Game::play()
 {
 	char raw_msg[255];
 	std::string str = "";
+	std::string joystick = "";
+	std::string btn = "";
+	json j_msg_rcv;
 
 	while (_winningPlayer == 0)
 	{
+		joystick = "";
+		btn = "";
 		str = "";
+
 		show.menuSelection();
 		afficherWins();
 
@@ -80,10 +86,26 @@ void Game::play()
 		_cp2->afficherCard();
 		std::cout << std::endl << std::endl << std::endl;
 		//system("pause");
-		while (str == "") {
+		while (btn == "" && joystick == "") {
+			j_msg_rcv.clear();
 			Sleep(100);
 			if (arduino->readSerialPort(raw_msg, 255) != 0) {
 				str = raw_msg;
+				if (str.find_last_of('\n') == std::string::npos) {
+					arduino->readSerialPort(raw_msg, 255);
+					str += raw_msg;
+				}
+				if (str[0] != '{')
+					str = str.substr(str.find_first_of("\n") + 1, str.length());
+				str = str.substr(0, str.find_last_of('\n') - 1);
+				str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+				if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+					j_msg_rcv = json::parse(str);
+
+					btn = j_msg_rcv["bouton"];
+					joystick = j_msg_rcv["JoyStick"];
+				}
 			}
 		}
 
@@ -113,7 +135,7 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 	char raw_msg[255];
 	int indexP1 = 0;
 	int indexP2 = 0;
-	json j_msg_rcv;
+	json j_msg_send, j_msg_rcv;
 	std::string str;
 
 	//afficherTour();
@@ -129,8 +151,14 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 		Card* c = p1.getCard(i);
 
 		set[0] = 7;
-		if (indexP1 == i)
+		if (indexP1 == i) {
+			j_msg_send["led"] = (int)c->getColor();
+			j_msg_send["power"] = (int)c->getNumber();
+
+			Game::SendToSerial(arduino, j_msg_send);
+
 			set[0] = 12;
+		}
 
 		gotoxy(0, i + OFFSET_Y);
 		color(set[0]);
@@ -206,7 +234,7 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 						indexP1--;
 					if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
 						indexP1++;
-					if (btn == "On" || accel == "myb")
+					if (btn == "On" || accel == "myb" || accel == "mxb")
 						cards[0] = indexP1;
 
 					for (int i = 0; i < p1.getDeckSize(); i++)
@@ -214,8 +242,15 @@ std::vector<int> Game::selectCard(Player p1, Player p2)
 						Card* c = p1.getCard(i);
 
 						set[0] = 7;
-						if (indexP1 == i)
+						if (indexP1 == i) {
+							//if(manette)
+							j_msg_send["led"] = (int)c->getColor();
+							j_msg_send["power"] = (int)c->getNumber();
+
+							Game::SendToSerial(arduino, j_msg_send);
+
 							set[0] = 12;
+						}
 
 						gotoxy(0, i + OFFSET_Y);
 						color(set[0]);
@@ -256,7 +291,10 @@ Player Game::winningPlayer()
 {
 	Card* c = winningCard(_cp1, _cp2);
 	char raw_msg[255];
+	json j_msg_rcv;
 	std::string str = "";
+	std::string joystick = "";
+	std::string btn = "";
 
 	if (c == _cp1)
 	{
@@ -265,10 +303,26 @@ Player Game::winningPlayer()
 		gotoxy(25, 5);
 		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
 
-		while (str == "") {
+		while (btn == "" && joystick == "") {
+			j_msg_rcv.clear();
 			Sleep(100);
 			if (arduino->readSerialPort(raw_msg, 255) != 0) {
 				str = raw_msg;
+				if (str.find_last_of('\n') == std::string::npos) {
+					arduino->readSerialPort(raw_msg, 255);
+					str += raw_msg;
+				}
+				if (str[0] != '{')
+					str = str.substr(str.find_first_of("\n") + 1, str.length());
+				str = str.substr(0, str.find_last_of('\n') - 1);
+				str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+				if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+					j_msg_rcv = json::parse(str);
+
+					btn = j_msg_rcv["bouton"];
+					joystick = j_msg_rcv["JoyStick"];
+				}
 			}
 		}
 		//system("pause");
@@ -390,19 +444,6 @@ bool Game::RcvFromSerial(SerialPort* arduino, std::string& msg) {
 	msg.clear(); // clear string
 	// Read serialport until '\n' character (Blocking)
 
-	// Version fonctionnel dans VScode, mais non fonctionnel avec Visual Studio
-/*
-	while(msg.back()!='\n'){
-		if(msg.size()>MSG_MAX_SIZE){
-			return false;
-		}
-
-		buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
-		str_buffer.assign(char_buffer, buffer_size);
-		msg.append(str_buffer);
-	}
-*/
-
 // Version fonctionnelle dans VScode et Visual Studio
 	buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
 	str_buffer.assign(char_buffer, buffer_size);
@@ -411,4 +452,11 @@ bool Game::RcvFromSerial(SerialPort* arduino, std::string& msg) {
 	//msg.pop_back(); //remove '/n' from string
 
 	return true;
+}
+
+bool Game::SendToSerial(SerialPort* arduino, json j_msg) {
+	// Return 0 if error
+	std::string msg = j_msg.dump();
+	bool ret = arduino->writeSerialPort(msg.c_str(), msg.length());
+	return ret;
 }
