@@ -1,212 +1,165 @@
 #include <Arduino.h>
 #include <stdio.h>
+#include <ArduinoJson.h>
+#include <LiquidCrystal_I2C.h>
 
-// put function definitions here:
-bool Bouton() {
+#define BAUD 9600
 
-  /*bool dernier_etat = false;
-  bool bouton = digitalRead(38);
-  Serial.println("9");
-  if (bouton != dernier_etat){
-    bouton = !bouton;
-  }else{
-    dernier_etat = bouton;
-  }
-  if (bouton){
-    Serial.println("le bouton est relevé");
-  }else{
-        Serial.println("le bouton est enfoncé");
-  }
-  //return bouton;*/
-  bool bouton = digitalRead(38);
-  if(bouton == 1){
-    Serial.println("le bouton est relevé");
-    return 1;
-  }else{
-    Serial.println("le bouton est enfoncé");
-    return 0;
+#define LED_ROUGE 45
+#define LED_JAUNE 43
+#define LED_VERT 41
+#define LED_BLEU 39
+
+volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
+volatile bool shouldRead_ = false;
+LiquidCrystal_I2C lcd(0x27, 20, 4);
+
+void serialEvent() { shouldRead_ = true; }
+
+void sendMsg(char* J, char* A, char* B) {
+  StaticJsonDocument<500> doc;
+  // Elements du message
+  doc["bouton"] = B;
+  doc["JoyStick"] = J;
+  doc["accel"] = A;
+
+  // Serialisation
+  serializeJson(doc, Serial);
+
+  // Envoie
+  Serial.println();
+  shouldSend_ = false;
+}
+
+void PrintElement(int element){
+  switch (element)
+  {
+  case 0:
+    lcd.print("Feu");
+    break;
+  case 1:
+    lcd.print("Eau");
+    break;
+  case 2:
+    lcd.print("neige");
+    break;
+  default:
+    break;
   }
 }
 
-/*int Segment7(int chiffre){
-  
-  int segmentA = false;
-  int segmentB = false;
-  int segmentC = false;
-  int segmentD = false;
-  int segmentE = false;
-  int segmentF = false;
-  int segmentG = false;
-  int segmentPoint = false;
-  if (!(0 <= chiffre <= 9)){
-    return -1;
+void PrintCouleur(int couleur){
+  switch (couleur)
+  {
+  case 0:
+    lcd.print("Jaune");
+    break;
+  case 1:
+    lcd.print("Rouge");
+    break;
+  case 2:
+    lcd.print("Vert");
+    break;
+  case 3:
+    lcd.print("Bleu");
+    break;
+  default:
+    break;
   }
+}
 
-  switch(chiffre){
-    case 0:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 0;
-      segmentF = 0;
-      segmentG = 1;
-      segmentPoint = 0;
-
-    case 1:
-      segmentA = 1;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
-      segmentPoint = 0;
-
-    case 2:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 1;
-      segmentD = 0;
-      segmentE = 0;
-      segmentF = 1;
-      segmentG = 0;
-      segmentPoint = 0;
-
-    case 3:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 0;
-      segmentPoint = 0;   
-  
-    case 4:
-      segmentA = 1;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 0;
-      segmentG = 0;
-      segmentPoint = 0;
-
-    case 5:
-      segmentA = 0;
-      segmentB = 1;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 1;
-      segmentF = 0;
-      segmentG = 0;
-      segmentPoint = 0; 
-
-    case 6:
-      segmentA = 0;
-      segmentB = 1;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 0;
-      segmentF = 0;
-      segmentG = 0;
-      segmentPoint = 0;
-
-    case 7:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
-      segmentPoint = 0;
-
-    case 8:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 0;
-      segmentF = 0;
-      segmentG = 0;
-      segmentPoint = 0;
+int compt = 0;
+// put function definitions here:
+char* Bouton() {
+  bool bouton = digitalRead(38);
+  if(digitalRead(38)){
+    //Serial.println("le bouton est relevé");
+    return "";
+  }else{
+    while (!digitalRead(38))
+    {
+      /* code */
+    }
     
-    case 9:
-      segmentA = 0;
-      segmentB = 0;
-      segmentC = 0;
-      segmentD = 0;
-      segmentE = 1;
-      segmentF = 0;
-      segmentG = 0;
-      segmentPoint = 0;
-
-    digitalWrite(22, segmentA);
-    digitalWrite(23, segmentB);
-    digitalWrite(24, segmentC);
-    digitalWrite(25, segmentPoint);
-    digitalWrite(50, segmentE);
-    digitalWrite(51, segmentD);
-    digitalWrite(52, segmentF);
-    digitalWrite(53, segmentG);
-
-    Serial.print("valeur à afficher:");
-    Serial.println(chiffre);
-    return 0;  
+    //Serial.println("le bouton est enfoncé");
+    return "On";
   }
-}*/
+}
+
+void Del(int del)
+{
+  switch (del)
+  {
+  case 0:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, HIGH);
+    break;
+  case 1:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, HIGH);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  case 2:
+    digitalWrite(LED_VERT, HIGH);
+    digitalWrite(LED_BLEU, LOW);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  case 3:
+    digitalWrite(LED_VERT, LOW);
+    digitalWrite(LED_BLEU, HIGH);
+    digitalWrite(LED_ROUGE, LOW);
+    digitalWrite(LED_JAUNE, LOW);
+    break;
+  default:
+    break;
+  }
+}
 
 int Segment7(int chiffre){
   
-  int segmentA = false;
-  int segmentB = false;
-  int segmentC = false;
-  int segmentD = false;
-  int segmentE = false;
-  int segmentF = false;
-  int segmentG = false;
-  int segmentPoint = false;
+  int segmentA = 1;
+  int segmentB = 1;
+  int segmentC = 1;
+  int segmentD = 1;
+  int segmentE = 1;
+  int segmentF = 1;
+  int segmentG = 1;
+  int segmentPoint = 1;
   //Serial.println(chiffre);
   if (!(0 <= chiffre && chiffre <= 9)){
-    Serial.println("sortie");
+    //Serial.println("sortie");
     return 0;
   }
   //Serial.println(chiffre);
 
   switch(chiffre){
     case 0:
-    Serial.println(chiffre);
+    
       segmentA = 0;
       segmentB = 0;
       segmentC = 0;
       segmentD = 0;
       segmentE = 0;
       segmentF = 0;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
     case 1:
-    Serial.println(chiffre);
-      segmentA = 1;
+    
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
     case 2:
       segmentA = 0;
       segmentB = 0;
-      segmentC = 1;
       segmentD = 0;
       segmentE = 0;
-      segmentF = 1;
       segmentG = 0;
       segmentPoint = 0;
       break;
@@ -216,18 +169,13 @@ int Segment7(int chiffre){
       segmentB = 0;
       segmentC = 0;
       segmentD = 0;
-      segmentE = 1;
-      segmentF = 1;
       segmentG = 0;
       segmentPoint = 0;
       break;   
   
     case 4:
-      segmentA = 1;
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
       segmentF = 0;
       segmentG = 0;
       segmentPoint = 0;
@@ -235,10 +183,8 @@ int Segment7(int chiffre){
 
     case 5:
       segmentA = 0;
-      segmentB = 1;
       segmentC = 0;
       segmentD = 0;
-      segmentE = 1;
       segmentF = 0;
       segmentG = 0;
       segmentPoint = 0; 
@@ -246,7 +192,6 @@ int Segment7(int chiffre){
 
     case 6:
       segmentA = 0;
-      segmentB = 1;
       segmentC = 0;
       segmentD = 0;
       segmentE = 0;
@@ -259,10 +204,6 @@ int Segment7(int chiffre){
       segmentA = 0;
       segmentB = 0;
       segmentC = 0;
-      segmentD = 1;
-      segmentE = 1;
-      segmentF = 1;
-      segmentG = 1;
       segmentPoint = 0;
       break;
 
@@ -289,23 +230,24 @@ int Segment7(int chiffre){
       break;
   }
     digitalWrite(52, segmentA);
-    digitalWrite(22, segmentB);
-    digitalWrite(24, segmentC);
-    digitalWrite(50, segmentPoint);
-    digitalWrite(51, segmentE);
+    digitalWrite(51, segmentB);
+    digitalWrite(50, segmentC);
+    digitalWrite(53, segmentPoint);
+    digitalWrite(24, segmentE);
     digitalWrite(25, segmentD);
-    digitalWrite(53, segmentF);
+    digitalWrite(22, segmentF);
     digitalWrite(23, segmentG);
 
-    Serial.print("valeur à afficher:");
-    Serial.println(chiffre);
+    //Serial.print("valeur à afficher:");
+    //Serial.println(chiffre);
  return 1; 
 }
 
-void Joystick(){
+char* Joystick(){
 
   int x_Axispin = A0;
   int y_Axispin = A1;
+
 
   int xValue = analogRead(x_Axispin);
   int yValue = analogRead(y_Axispin);
@@ -313,200 +255,196 @@ void Joystick(){
   int bas = 256;
 
   if(xValue<bas and yValue<bas)
-    Serial.println("bas droite");
+  {
+    //Serial.println("bas droite");
+    return "jbd";
+  }
+
   if(xValue<bas and yValue>=bas and yValue<=haut)
-    Serial.println("droite");
+  {
+    //Serial.println("droite");
+    return "jd";
+  }
+
   if(xValue<bas and yValue>haut)
-    Serial.println("haut droite");
+  {
+    //Serial.println("haut droite");
+    return "jhd";
+  }
+
   if(xValue>=bas and xValue<=haut and yValue<bas)
-    Serial.println("bas");
+  {
+    //Serial.println("bas");
+    return "jb";
+  }
+
   if(xValue>=bas and xValue<=haut and yValue>haut)
-    Serial.println("haut");
+  {
+    //Serial.println("haut");
+    return "jh";
+  }
+
   if(xValue>haut and yValue<bas)
-    Serial.println("bas gauche");
+  {
+    //Serial.println("bas gauche");
+    return "jbg";
+  }
+
   if(xValue>haut and yValue>=bas and yValue<=haut)
-    Serial.println("gauche");
+  {
+    //Serial.println("gauche");
+    return "jg";
+  }
+
   if(xValue>haut and yValue>haut)
-    Serial.println("haut gauche");
+  {
+    //Serial.println("haut gauche");
+    return "jhg";
+  }
 
  /* Serial.print("x:");
   Serial.println(xValue);
   Serial.print("y:");
   Serial.println(yValue);*/
-  delay(500);
+
+  return "";
 }
-/*int x_depart;
-int y_depart;
-int z_depart;*/
 
-/*void Accel(){
-  /*
-  int x_Accelerometer = A2;
-  int y_Accelerometer = A3;
-  int z_Accelerometer = A4;
 
-  int X_Valeur = analogRead(x_Accelerometer);
-  int Y_valeur = analogRead(y_Accelerometer);
-  int Z_valeur = analogRead(z_Accelerometer);
-
-  Serial.print("x:");
-  Serial.println(X_Valeur);
-  Serial.print("y:");
-  Serial.println(Y_valeur);
-  Serial.print("z:");
-  Serial.println(Z_valeur);
-  delay(1000);
-  
-
-  int x, y, z;
-  //int x2,y2,z2;
-
-  x = analogRead(A2);       // read analog input pin 0
-  y = analogRead(A3);       // read analog input pin 1
-  z = analogRead(A4);       // read analog input pin 2
-  
-  Serial.print("############################\n");
-  /*Serial.print("valeur de x:");
-  Serial.println(x*3.3/1023);
-  Serial.print("valeur de y:");
-  Serial.println(y*3.3/1023);
-  Serial.print("valeur de z:");
-  Serial.println(z*3.3/1023);
-
-  Serial.print("valeur de x2:");
-  Serial.println(x);
-  Serial.print("valeur de y2:");
-  Serial.println(y);
-  Serial.print("valeur de z2:");
-  Serial.println(z);
-  //if ((x != 0) and (y != 0) and (z != 0)){
-    int dx = x_depart - x;
-    int dy = y_depart - y;
-    int dz = z_depart - z;
-
-    Serial.println(dx);
-    Serial.println(dy);
-    Serial.println(dz);
-    if (dx < -10) {
-      Serial.println("mouvement x vers le bas");
-    }else if (dx > 10){
-      Serial.println("mouvement x vers le haut");
-    }
-    else
-      Serial.println("Aucun mouvement x");
-
-    if (dy < -10) {
-      Serial.println("mouvement y vers le bas");
-    }else if (dy > 10){
-      Serial.println("mouvement y vers le haut");
-    }
-    else
-      Serial.println("Aucun mouvement y");
-
-    if (dz < -10) {
-      Serial.println("mouvement z vers le bas");
-    }else if (dz > 10){
-      Serial.println("mouvement z vers le haut");
-    }
-    else
-      Serial.println("Aucun mouvement z");
- // }
-
-  /*Serial.print("accelerations are x, y, z: ");
-  Serial.print(x, DEC);    // print the acceleration in the X axis
-  Serial.print(" ");       // prints a space between the numbers
-  Serial.print(y, DEC);    // print the acceleration in the Y axis
-  Serial.print(" ");       // prints a space between the numbers
-  Serial.println(z, DEC);  // print the acceleration in the Z axis
-  delay(100);              // wait 100ms for next reading
-  x2 = x;
-  y2 = y;
-  z2 = z;
-  Serial.print("valeur de x2:");
-  Serial.println(x2);
-  Serial.print("valeur de y2:");
-  Serial.println(y2);
-  Serial.print("valeur de z2:");
-  Serial.println(z2);
-}*/
-
-void Accel()
+char* Accel()
 {
-  int delait = 200;
+  int delait = 100;
   int x_depart = analogRead(A2);
   int y_depart = analogRead(A3);
   int z_depart = analogRead(A4);
-  Serial.print("x depart :");
-  Serial.println(x_depart);
+  int i = 0;
 
-  Serial.print("y depart :");
-  Serial.println(y_depart);
-
-  Serial.print("z depart :");
-  Serial.println(z_depart);
-
-  while(true) //Mettre un break pour sortir de la boucle
+  while(i < 3) //Mettre un break pour sortir de la boucle
   {
-    Serial.print("x depart:");
-    Serial.println(x_depart);
-    Serial.print("y depart:");
-    Serial.println(y_depart);
-    Serial.print("z depart:");
-    Serial.println(z_depart);
 
     int x = analogRead(A2);
     int y = analogRead(A3);
     int z = analogRead(A4);
-    Serial.print("x:");
-    Serial.println(x);
-    Serial.print("y:");
-    Serial.println(y);
-    Serial.print("z:");
-    Serial.println(z);
 
     //difference
     int dx = x_depart - x;
     int dy = y_depart - y;
     int dz = z_depart - z;
-    /*Serial.println(dx);
-    Serial.println(dy);
-    Serial.println(dz);*/
+    
     if (dx < -40) {
-      Serial.println(dx);
-      Serial.println("mouvement x vers le bas");
+      //*
+      //Serial.println(dx);
+      //Serial.println("mouvement x vers le bas");
+      //*/
       delay(delait);
+      return "mxb";
+      break;
     }else if (dx > 40){
-      Serial.println(dx);
-      Serial.println("mouvement x vers le haut");
+      //*
+      //Serial.println(dx);
+      //Serial.println("mouvement x vers le haut");
+      //*/
       delay(delait);
+      return "mxh";
+      break;
     }
 
     if (dy < -40) {
-      Serial.println(dy);
-      Serial.println("mouvement y vers le bas");
+      //*
+      //Serial.println(dy);
+      //Serial.println("mouvement y vers le bas");
+      //*/
       delay(delait);
+      return "myb";
+      break;
     }else if (dy > 40){
-      Serial.println(dy);
-      Serial.println("mouvement y vers le haut");
+      //*
+      //Serial.println(dy);
+      //Serial.println("mouvement y vers le haut");
+      //*/
       delay(delait);
+      return "myh";
+      break;
     }
 
-    if (dz < -10) {
-      Serial.println(dz);
-      Serial.println("mouvement z vers le bas");
+    if (dz < -40) {
+      //*
+      //Serial.println(dz);
+      //Serial.println("mouvement z vers le bas");
+      //*/
       delay(delait);
-    }else if (dz > 10){
-      Serial.println(dz);
-      Serial.println("mouvement z vers le haut");
+      return "mzb";
+      break;
+    }else if (dz > 30){
+      //*
+      //Serial.println(dz);
+      //Serial.println("mouvement z vers le haut");
+      //*/
       delay(delait);
+      return "mzh";
+      break;
     }
       x_depart = x;
       y_depart = y;
       z_depart = z;
 
-    delay(500);
+    delay(100);
+    i++;
+    //Serial.println(i);
   }
+
+  return "";
 }  
+
+void readMsg()  //ajouter les output des del
+{
+  // Lecture du message Json
+  StaticJsonDocument<500> doc;
+  JsonVariant parse_msg;
+
+  // Lecture sur le port Seriel
+  DeserializationError error = deserializeJson(doc, Serial);
+  shouldRead_ = false;
+
+  // Si erreur dans le message
+  if (error) {
+    Serial.print("deserialize() failed: ");
+    Serial.println(error.c_str());
+    return;
+  }
+  
+  parse_msg = doc["Element"];
+  if (!parse_msg.isNull())
+  {
+    int element = doc["Element"].as<int>();
+    int couleur = doc["Couleur"].as<int>();
+    int valeur = doc["Valeur"].as<int>();
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(valeur);
+
+    lcd.setCursor(0,1);
+    PrintElement(element);
+
+    lcd.setCursor(0,2);
+    PrintCouleur(couleur);
+  }else{
+    parse_msg = doc["led"];
+    if (!parse_msg.isNull()) {
+      // mettre la led a la valeur doc["led"]
+      //digitalWrite(pinLED,doc["led"].as<bool>());
+      Del(doc["led"].as<int>());
+    }
+    parse_msg = doc["power"];
+    if (!parse_msg.isNull()) {
+      // mettre la led a la valeur doc["led"]
+      //digitalWrite(pinLED,doc["led"].as<bool>());
+      Segment7(doc["power"].as<int>());
+    }
+  }
+
+}
 
 
 void setup() {
@@ -521,50 +459,38 @@ void setup() {
   pinMode(25, OUTPUT); //D
   pinMode(53, OUTPUT); //F
   pinMode(23, OUTPUT); //G
-  //pinMode(36, OUTPUT); //test
-  //test
-  /*x_depart = analogRead(A2);
-  y_depart = analogRead(A3);
-  z_depart = analogRead(A4);
-  Serial.print("x depart :");
-  Serial.println(x_depart);
 
-  Serial.print("y depart :");
-  Serial.println(y_depart);
+  //LED
+  pinMode(LED_ROUGE, OUTPUT);
+  pinMode(LED_JAUNE, OUTPUT);
+  pinMode(LED_VERT, OUTPUT);
+  pinMode(LED_BLEU, OUTPUT);
+  //pinMode(LED_ROUGE, OUTPUT);
 
-  Serial.print("z depart :");
-  Serial.println(z_depart);*/
+  lcd.init();
+  lcd.backlight();
 }
-/*void setup() {
-  Serial.begin(9600);
-  pinMode(38, INPUT);
-  pinMode(22, OUTPUT); //A
-  pinMode(23, OUTPUT);
-  pinMode(24, OUTPUT);
-  pinMode(25, OUTPUT);
-  pinMode(50, OUTPUT);
-  pinMode(51, OUTPUT);
-  pinMode(52, OUTPUT);
-  pinMode(53, OUTPUT);
 
-}*/
 void loop() {
-  //bool etat = Bouton();
-  //printf("entrez un chiffre: ");
-  //scanf("%d", valeur);
-  Joystick();
-  //Accel();
-  /*digitalWrite(52, HIGH);
-  Serial.println("Allumer");
-  delay(3000);
-  digitalWrite(52, LOW);
-  Serial.println("Fermer");
-  delay(3000);*/
+  char* J = Joystick();
+  char* A = Accel();
+  char* B = Bouton();
 
-/*for(int i =0; i < 10; i++)
-{
-  Segment7(i);
-  delay(1000);
-}
-*/
+  if(J != "" || A != "" || B != "")
+    shouldSend_ = true;
+
+  if(shouldSend_){
+    sendMsg(J, A, B);
+  }
+  if(shouldRead_){
+    readMsg();
+  }
+
+  while (J != "" || A != "" || B != "")
+  {
+    J = Joystick();
+    A = Accel();
+    B = Bouton();
+  }
+  
 }

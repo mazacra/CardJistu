@@ -5,11 +5,22 @@
 #include <string>
 #include <iostream>
 
+#include "include/serial/SerialPort.hpp"
+#include "include/json.hpp"
+using json = nlohmann::json;
+
+#define BAUD 9600           // Frequence de transmission serielle
+#define MSG_MAX_SIZE 1024   // Longueur maximale d'un message
+
 #define OFFSET_Y 12
+#define OFFSET_X 70
+
+SerialPort* arduino;
 
 Game::Game()
 {
-
+	CONSOLE_CURSOR_INFO cursorInfo;
+	cursorInfo.bVisible = false;
 }
 
 Game::~Game()
@@ -19,12 +30,31 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
+	//if (manette == TRUE)
+	//{
+	const char* com = "COM3";
+	arduino = new SerialPort(com, BAUD);
+
+	if (!arduino->isConnected()) {
+		manette = FALSE;
+		//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+		//exit(1);
+		if (!solo)
+			return;
+	}
+	else
+	{
+		manette = TRUE;
+	}
+	//}
+
 	Player player1, player2;
 
 	player1.generateDeck();
 	player2.generateDeck();
 
 	_winningPlayer = 0;
+	_solo = solo;
 
 	if (solo)
 		player2.setAI(true);
@@ -37,27 +67,69 @@ void Game::newGame(bool solo)
 
 void Game::play()
 {
+	char raw_msg[255];
+	std::string str = "";
+	std::string joystick = "";
+	std::string btn = "";
+	json j_msg_rcv;
 
 	while (_winningPlayer == 0)
 	{
+		joystick = "";
+		btn = "";
+		str = "";
+
 		show.menuSelection();
 		afficherWins();
 
-		int iP1 = selectCard(_p1);
-		int iP2 = selectCard(_p2);
+		std::vector<int> l = { -1, -1 };
+		if (manette == FALSE)
+		{
+			l[0] = selectCardClavier(_p1);
+			l[1] = selectCardClavier(_p2);
+		}
 
-		_cp1 = _p1.getCard(iP1);
-		_cp2 = _p2.getCard(iP2);
+		if (manette == TRUE)
+			l = selectCardManette(_p1, _p2);
+
+		_cp1 = _p1.getCard(l[0]);
+		_cp2 = _p2.getCard(l[1]);
 
 		system("CLS");
 		gotoxy(15, 5);
-		_cp1->afficherCard();
+		show.afficherCard(_cp1);
 		gotoxy(15, 6);
 		std::cout << "   VS   " << std::endl;
 		gotoxy(15, 7);
-		_cp2->afficherCard(); 
+		show.afficherCard(_cp2);
 		std::cout << std::endl << std::endl << std::endl;
-		system("pause");
+		if (manette == FALSE)
+			system("pause");
+		else if (manette == TRUE)
+		{
+			while (btn == "" && joystick == "") {
+				j_msg_rcv.clear();
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+					if (str.find_last_of('\n') == std::string::npos) {
+						arduino->readSerialPort(raw_msg, 255);
+						str += raw_msg;
+					}
+					if (str[0] != '{')
+						str = str.substr(str.find_first_of("\n") + 1, str.length());
+					str = str.substr(0, str.find_last_of('\n') - 1);
+					str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+						j_msg_rcv = json::parse(str);
+
+						btn = j_msg_rcv["bouton"];
+						joystick = j_msg_rcv["JoyStick"];
+					}
+				}
+			}
+		}
 
 		winningPlayer();
 
@@ -70,8 +142,8 @@ void Game::play()
 			_winningPlayer = 2;
 		}
 
-		_p1.removeCard(iP1);
-		_p2.removeCard(iP2);
+		_p1.removeCard(l[0]);
+		_p2.removeCard(l[1]);
 		_p1.drawCard();
 		_p2.drawCard();
 	}
@@ -79,14 +151,14 @@ void Game::play()
 	show.winner(_winningPlayer);
 }
 
-int Game::selectCard(Player p)
+int Game::selectCardClavier(Player p)
 {
 	int index = 0;
 
 	if (p.getAI())
 		return p.AISelectCard();
 	else {
-		afficherTour();
+		playerTurn();
 		int set[] = { 7, 7, 7 };
 		char key = 0;
 
@@ -108,7 +180,7 @@ int Game::selectCard(Player p)
 				gotoxy(0, i + OFFSET_Y);
 				color(set[0]);
 
-				c->afficherCard();
+				show.afficherCard(c);
 
 				set[0] = 7;
 				color(set[0]);
@@ -119,6 +191,182 @@ int Game::selectCard(Player p)
 	}
 
 	return index;
+}
+
+std::vector<int> Game::selectCardManette(Player p1, Player p2)
+{
+	char raw_msg[255];
+	int indexP1 = 0;
+	int indexP2 = 0;
+	json j_msg_send, j_msg_rcv;
+	std::string str;
+
+	//afficherTour();
+	std::vector<int> cards = { -1, -1 };
+	int set[] = { 7, 7, 7 };
+	std::string joystick = "";
+	std::string accel = "";
+	std::string btn = "";
+
+	//Print une premi�re fois les carte du joueur 1
+	for (int i = 0; i < p1.getDeckSize(); i++)
+	{
+		Card* c = p1.getCard(i);
+
+		set[0] = 7;
+		if (indexP1 == i) {
+			j_msg_send["led"] = (int)c->getColor();
+			j_msg_send["power"] = (int)c->getNumber();
+
+			Game::SendToSerial(arduino, j_msg_send);
+
+			set[0] = 12;
+		}
+
+		gotoxy(0, i + OFFSET_Y);
+		color(set[0]);
+
+		show.afficherCard(c);
+
+		set[0] = 7;
+		color(set[0]);
+	}
+
+	while (cards[0] == -1 || cards[1] == -1) {
+		Sleep(100);
+		//Selection joueur 2
+		//Si le joueur � choisi sa carte on peut le skip
+		if (cards[1] == -1) {
+
+			if (GetKeyState(VK_UP) && indexP2 > 0)
+				indexP2--;
+			if (GetKeyState(VK_DOWN) && indexP2 < p2.getDeckSize() - 1)
+				indexP2++;
+			if (GetKeyState(VK_RETURN))
+				cards[1] = indexP2;
+
+			if (!p2.getAI()) {
+
+				for (int i = 0; i < p2.getDeckSize(); i++)
+				{
+					Card* c = p2.getCard(i);
+
+					set[0] = 7;
+					if (indexP2 == i)
+						set[0] = 12;
+
+					gotoxy(0 + OFFSET_X, i + OFFSET_Y);
+					color(set[0]);
+
+					show.afficherCard(c);
+
+					set[0] = 7;
+					color(set[0]);
+				}
+			}
+			else
+				cards[1] = p2.AISelectCard();
+		}
+
+		if (cards[0] == -1) {
+			if (manette == TRUE) {
+
+				j_msg_rcv.clear(); // effacer le message precedent
+				btn = "";
+				joystick = "";
+				accel = "";
+
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+					if (str.find_last_of('\n') == std::string::npos) {
+						arduino->readSerialPort(raw_msg, 255);
+						str += raw_msg;
+					}
+					if (str[0] != '{')
+						str = str.substr(str.find_first_of("\n") + 1, str.length());
+					str = str.substr(0, str.find_last_of('\n') - 1);
+					str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+					// Transfert du message en json
+					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+						j_msg_rcv = json::parse(str);
+
+						btn = j_msg_rcv["bouton"];
+						joystick = j_msg_rcv["JoyStick"];
+						accel = j_msg_rcv["accel"];
+
+						if (joystick == "jh" && indexP1 > 0)
+							indexP1--;
+						if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
+							indexP1++;
+						if (btn == "On" || accel == "myb" || accel == "mxb")
+							cards[0] = indexP1;
+
+						for (int i = 0; i < p1.getDeckSize(); i++)
+						{
+							Card* c = p1.getCard(i);
+
+							set[0] = 7;
+							if (indexP1 == i) {
+								//if(manette)
+								j_msg_send["led"] = (int)c->getColor();
+								j_msg_send["power"] = (int)c->getNumber();
+
+								Game::SendToSerial(arduino, j_msg_send);
+
+								set[0] = 12;
+							}
+
+							gotoxy(0, i + OFFSET_Y);
+							color(set[0]);
+
+							show.afficherCard(c);
+
+							set[0] = 7;
+							color(set[0]);
+						}
+					}
+				}
+			}
+			else {
+				int set[] = { 7, 7, 7 };
+				char key = 0;
+
+				while (true) {
+					if (key == 72 && indexP1 > 0)
+						indexP1--;
+					if (key == 80 && indexP1 < p1.getDeckSize() - 1)
+						indexP1++;
+					if (key == '\r') {
+						cards[0] = indexP1;
+						break;
+					}
+					for (int i = 0; i < p1.getDeckSize(); i++)
+					{
+						Card* c = p1.getCard(i);
+
+						set[0] = 7;
+						if (indexP1 == i) {
+							set[0] = 12;
+						}
+
+						gotoxy(0, i + OFFSET_Y);
+						color(set[0]);
+
+						show.afficherCard(c);
+
+						set[0] = 7;
+						color(set[0]);
+					}
+
+					key = _getch();
+				}
+			}
+		}
+	}
+
+
+	return cards;
 }
 
 Card* Game::winningCard(Card* c1, Card* c2)
@@ -137,19 +385,66 @@ Card* Game::winningCard(Card* c1, Card* c2)
 	if (c1->getNumber() > c2->getNumber()) return c1;
 
 	if (c1->getNumber() < c2->getNumber()) return c2;
+
+	return nullptr;
 }
 
 Player Game::winningPlayer()
 {
+	json j_msg_send;
 	Card* c = winningCard(_cp1, _cp2);
+	char raw_msg[255];
+	json j_msg_rcv;
+	std::string str = "";
+	std::string joystick = "";
+	std::string btn = "";
+
+	if (c != nullptr) {
+
+		j_msg_send.clear();
+		j_msg_send["Element"] = (int)c->getElement();
+		j_msg_send["Couleur"] = (int)c->getColor();
+		j_msg_send["Valeur"] = c->getNumber();
+		Game::SendToSerial(arduino, j_msg_send);
+	}
 
 	if (c == _cp1)
 	{
 		_p1.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
-		std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
-		system("pause");
+		//std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
+		show.afficherRoundWinner(1);
+
+		if (manette == FALSE)
+			system("pause");
+
+		if (manette == TRUE)
+		{
+			while (btn == "" && joystick == "") {
+				j_msg_rcv.clear();
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+					if (str.find_last_of('\n') == std::string::npos) {
+						arduino->readSerialPort(raw_msg, 255);
+						str += raw_msg;
+					}
+					if (str[0] != '{')
+						str = str.substr(str.find_first_of("\n") + 1, str.length());
+					str = str.substr(0, str.find_last_of('\n') - 1);
+					str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+						j_msg_rcv = json::parse(str);
+
+						btn = j_msg_rcv["bouton"];
+						joystick = j_msg_rcv["JoyStick"];
+					}
+				}
+			}
+		}
+		//system("pause");
 		return _p1;
 	}
 
@@ -158,10 +453,29 @@ Player Game::winningPlayer()
 		_p2.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
-		std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
-		system("pause");
+		//std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
+		show.afficherRoundWinner(2);
+
+		if (manette == FALSE)
+			system("pause");
+
+		if (manette == TRUE)
+		{
+			while (str == "") {
+				Sleep(100);
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+				}
+			}
+		}
+		//system("pause");
 		return _p2;
 	}
+
+	system("CLS");
+	gotoxy(25, 5);
+	std::cout << "Aucun gagnant!" << std::endl << std::endl << std::endl;
+	return _p1;
 }
 
 bool Game::getWinner(Player p)
@@ -207,7 +521,7 @@ void Game::afficherWins()
 	{
 		Card* c = _p1.getCardWins(i);
 		gotoxy(50, i + OFFSET_Y);
-		c->afficherCard();
+		show.afficherCard(c);
 	}
 
 	gotoxy(70, OFFSET_Y - 2);
@@ -217,20 +531,22 @@ void Game::afficherWins()
 	{
 		Card* c = _p2.getCardWins(i);
 		gotoxy(70, i + OFFSET_Y);
-		c->afficherCard();
+		show.afficherCard(c);
 	}
 }
 
-void Game::afficherTour()
+void Game::playerTurn()
 {
 	system("CLS");
 	gotoxy(25, 5);
-	if(player)
-		std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+	if (player)
+		//std::cout << "P2 choisis sa carte" << std::endl << std::endl << std::endl;
+		show.afficherRoundTurn(2);
 	else
-		std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+		//std::cout << "P1 choisis sa carte" << std::endl << std::endl << std::endl;
+		show.afficherRoundTurn(1);
 
-	if(!_p2.getAI())
+	if (!_p2.getAI())
 		player = !player;
 
 	system("pause");
@@ -249,4 +565,31 @@ void Game::gotoxy(int x, int y)
 	c.X = x;
 	c.Y = y;
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), c);
+}
+
+bool Game::RcvFromSerial(SerialPort* arduino, std::string& msg) {
+	// Return 0 if error
+	// Message output in msg
+	std::string str_buffer;
+	char char_buffer[MSG_MAX_SIZE];
+	int buffer_size;
+
+	msg.clear(); // clear string
+	// Read serialport until '\n' character (Blocking)
+
+// Version fonctionnelle dans VScode et Visual Studio
+	buffer_size = arduino->readSerialPort(char_buffer, MSG_MAX_SIZE);
+	str_buffer.assign(char_buffer, buffer_size);
+	msg.append(str_buffer);
+
+	//msg.pop_back(); //remove '/n' from string
+
+	return true;
+}
+
+bool Game::SendToSerial(SerialPort* arduino, json j_msg) {
+	// Return 0 if error
+	std::string msg = j_msg.dump();
+	bool ret = arduino->writeSerialPort(msg.c_str(), msg.length());
+	return ret;
 }
