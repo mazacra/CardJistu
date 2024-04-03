@@ -32,18 +32,20 @@ void Game::newGame(bool solo)
 {
 	//if (manette == TRUE)
 	//{
-		const char* com = "COM3";
-		arduino = new SerialPort(com, BAUD);
+	const char* com = "COM3";
+	arduino = new SerialPort(com, BAUD);
 
-		if (!arduino->isConnected()) {
-			manette = FALSE;
-			//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
-			//exit(1);
-		}
-		else
-		{
-			manette = TRUE;
-		}
+	if (!arduino->isConnected()) {
+		manette = FALSE;
+		//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
+		//exit(1);
+		if (!solo)
+			return;
+	}
+	else
+	{
+		manette = TRUE;
+	}
 	//}
 
 	Player player1, player2;
@@ -87,7 +89,7 @@ void Game::play()
 			l[1] = selectCardClavier(_p2);
 		}
 
-		if (manette == TRUE) 
+		if (manette == TRUE)
 			l = selectCardManette(_p1, _p2);
 
 		_cp1 = _p1.getCard(l[0]);
@@ -267,49 +269,84 @@ std::vector<int> Game::selectCardManette(Player p1, Player p2)
 		}
 
 		if (cards[0] == -1) {
-			j_msg_rcv.clear(); // effacer le message precedent
-			btn = "";
-			joystick = "";
-			accel = "";
+			if (manette == TRUE) {
 
-			if (arduino->readSerialPort(raw_msg, 255) != 0) {
-				str = raw_msg;
-				if (str.find_last_of('\n') == std::string::npos) {
-					arduino->readSerialPort(raw_msg, 255);
-					str += raw_msg;
+				j_msg_rcv.clear(); // effacer le message precedent
+				btn = "";
+				joystick = "";
+				accel = "";
+
+				if (arduino->readSerialPort(raw_msg, 255) != 0) {
+					str = raw_msg;
+					if (str.find_last_of('\n') == std::string::npos) {
+						arduino->readSerialPort(raw_msg, 255);
+						str += raw_msg;
+					}
+					if (str[0] != '{')
+						str = str.substr(str.find_first_of("\n") + 1, str.length());
+					str = str.substr(0, str.find_last_of('\n') - 1);
+					str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+					// Transfert du message en json
+					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+						j_msg_rcv = json::parse(str);
+
+						btn = j_msg_rcv["bouton"];
+						joystick = j_msg_rcv["JoyStick"];
+						accel = j_msg_rcv["accel"];
+
+						if (joystick == "jh" && indexP1 > 0)
+							indexP1--;
+						if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
+							indexP1++;
+						if (btn == "On" || accel == "myb" || accel == "mxb")
+							cards[0] = indexP1;
+
+						for (int i = 0; i < p1.getDeckSize(); i++)
+						{
+							Card* c = p1.getCard(i);
+
+							set[0] = 7;
+							if (indexP1 == i) {
+								//if(manette)
+								j_msg_send["led"] = (int)c->getColor();
+								j_msg_send["power"] = (int)c->getNumber();
+
+								Game::SendToSerial(arduino, j_msg_send);
+
+								set[0] = 12;
+							}
+
+							gotoxy(0, i + OFFSET_Y);
+							color(set[0]);
+
+							show.afficherCard(c);
+
+							set[0] = 7;
+							color(set[0]);
+						}
+					}
 				}
-				if (str[0] != '{')
-					str = str.substr(str.find_first_of("\n") + 1, str.length());
-				str = str.substr(0, str.find_last_of('\n') - 1);
-				str = str.substr(str.find_last_of('\n') + 1, str.length());
+			}
+			else {
+				int set[] = { 7, 7, 7 };
+				char key = 0;
 
-				// Transfert du message en json
-				if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
-					j_msg_rcv = json::parse(str);
-
-					btn = j_msg_rcv["bouton"];
-					joystick = j_msg_rcv["JoyStick"];
-					accel = j_msg_rcv["accel"];
-
-					if (joystick == "jh" && indexP1 > 0)
+				while (true) {
+					if (key == 72 && indexP1 > 0)
 						indexP1--;
-					if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
+					if (key == 80 && indexP1 < p1.getDeckSize() - 1)
 						indexP1++;
-					if (btn == "On" || accel == "myb" || accel == "mxb")
+					if (key == '\r') {
 						cards[0] = indexP1;
-
+						break;
+					}
 					for (int i = 0; i < p1.getDeckSize(); i++)
 					{
 						Card* c = p1.getCard(i);
 
 						set[0] = 7;
 						if (indexP1 == i) {
-							//if(manette)
-							j_msg_send["led"] = (int)c->getColor();
-							j_msg_send["power"] = (int)c->getNumber();
-
-							Game::SendToSerial(arduino, j_msg_send);
-
 							set[0] = 12;
 						}
 
@@ -321,6 +358,8 @@ std::vector<int> Game::selectCardManette(Player p1, Player p2)
 						set[0] = 7;
 						color(set[0]);
 					}
+
+					key = _getch();
 				}
 			}
 		}
@@ -395,10 +434,10 @@ Player Game::winningPlayer()
 						str = str.substr(str.find_first_of("\n") + 1, str.length());
 					str = str.substr(0, str.find_last_of('\n') - 1);
 					str = str.substr(str.find_last_of('\n') + 1, str.length());
-	
+
 					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
 						j_msg_rcv = json::parse(str);
-	
+
 						btn = j_msg_rcv["bouton"];
 						joystick = j_msg_rcv["JoyStick"];
 					}
