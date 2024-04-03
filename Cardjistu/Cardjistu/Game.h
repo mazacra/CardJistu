@@ -17,12 +17,13 @@ public:
 
 	void newGame(bool solo);
 	void play();
-	std::vector<int> selectCard(Player p1 ,Player p2);
+	int selectCardClavier(Player p);
+	std::vector<int> selectCardManette(Player p1, Player p2);
 	Card* winningCard(Card* c1, Card* c2);
 	Player winningPlayer();
 	bool getWinner(Player p);
 	void afficherWins();
-	void afficherTour();
+	void playerTurn();
 	std::string readSerial();
 
 	void color(int color);
@@ -40,6 +41,8 @@ private:
 	bool player;
 	bool _solo;
 	int _winningPlayer = 0;
+	bool manette;
+
 };
 
 #endif // !GAME_H
