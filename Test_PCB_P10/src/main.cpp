@@ -13,6 +13,9 @@
 volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
 volatile bool shouldRead_ = false;
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+int cptJoystick;
+bool btnPressed;
+int compt = 0;
 
 void serialEvent() { shouldRead_ = true; }
 
@@ -68,22 +71,20 @@ void PrintCouleur(int couleur){
   }
 }
 
-int compt = 0;
 // put function definitions here:
 char* Bouton() {
-  bool bouton = digitalRead(38);
-  if(digitalRead(38)){
-    //Serial.println("le bouton est relevé");
-    return "";
-  }else{
-    while (!digitalRead(38))
-    {
-      /* code */
+  if(!btnPressed){
+    if(!digitalRead(38)){
+      btnPressed = true;
+      return "On";
     }
-    
-    //Serial.println("le bouton est enfoncé");
-    return "On";
+  }else{
+    if(digitalRead(38)){
+        btnPressed = false;
+    }
   }
+
+  return "";
 }
 
 void Del(int del)
@@ -244,17 +245,17 @@ int Segment7(int chiffre){
 }
 
 char* Joystick(){
+  int lastCpt = cptJoystick;
 
   int x_Axispin = A0;
   int y_Axispin = A1;
-
 
   int xValue = analogRead(x_Axispin);
   int yValue = analogRead(y_Axispin);
   int haut = 758;
   int bas = 256;
 
-  if(xValue<bas and yValue<bas)
+  /*if(xValue<bas and yValue<bas)
   {
     //Serial.println("bas droite");
     return "jbd";
@@ -270,21 +271,29 @@ char* Joystick(){
   {
     //Serial.println("haut droite");
     return "jhd";
-  }
+  }*/
 
   if(xValue>=bas and xValue<=haut and yValue<bas)
   {
-    //Serial.println("bas");
-    return "jb";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+      return "jb";
   }
 
   if(xValue>=bas and xValue<=haut and yValue>haut)
   {
-    //Serial.println("haut");
-    return "jh";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+      return "jh";
   }
 
-  if(xValue>haut and yValue<bas)
+  /*if(xValue>haut and yValue<bas)
   {
     //Serial.println("bas gauche");
     return "jbg";
@@ -300,12 +309,10 @@ char* Joystick(){
   {
     //Serial.println("haut gauche");
     return "jhg";
-  }
+  }*/
 
- /* Serial.print("x:");
-  Serial.println(xValue);
-  Serial.print("y:");
-  Serial.println(yValue);*/
+  if(cptJoystick == lastCpt)
+    cptJoystick = 0;
 
   return "";
 }
@@ -469,6 +476,9 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
+
+  cptJoystick = 0;
+  btnPressed = false;
 }
 
 void loop() {
@@ -485,12 +495,4 @@ void loop() {
   if(shouldRead_){
     readMsg();
   }
-
-  while (J != "" || A != "" || B != "")
-  {
-    J = Joystick();
-    A = Accel();
-    B = Bouton();
-  }
-  
 }
