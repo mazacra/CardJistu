@@ -16,11 +16,13 @@ using json = nlohmann::json;
 #define OFFSET_X 70
 
 SerialPort* arduino;
+bool btnIsPressed;
 
 Game::Game()
 {
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.bVisible = false;
+	btnIsPressed = false;
 }
 
 Game::~Game()
@@ -237,31 +239,44 @@ std::vector<int> Game::selectCardManette(Player p1, Player p2)
 		//Selection joueur 2
 		//Si le joueur � choisi sa carte on peut le skip
 		if (cards[1] == -1) {
-
-			if (GetKeyState(VK_UP) && indexP2 > 0)
-				indexP2--;
-			if (GetKeyState(VK_DOWN) && indexP2 < p2.getDeckSize() - 1)
-				indexP2++;
-			if (GetKeyState(VK_RETURN))
-				cards[1] = indexP2;
-
 			if (!p2.getAI()) {
+				if (!btnIsPressed) {
+					if (GetKeyState(VK_UP) && indexP2 > 0) {
+						btnIsPressed = true;
+						indexP2--;
+					}
+					if (GetKeyState(VK_DOWN) && indexP2 < p2.getDeckSize() - 1) {
+						btnIsPressed = true;
+						indexP2++;
+					}
+					if (GetKeyState(VK_RETURN)) {
+						btnIsPressed = true;
+						cards[1] = indexP2;
+					}
 
-				for (int i = 0; i < p2.getDeckSize(); i++)
-				{
-					Card* c = p2.getCard(i);
 
-					set[0] = 7;
-					if (indexP2 == i)
-						set[0] = 12;
+					for (int i = 0; i < p2.getDeckSize(); i++)
+					{
+						Card* c = p2.getCard(i);
 
-					gotoxy(0 + OFFSET_X, i + OFFSET_Y);
-					color(set[0]);
+						set[0] = 7;
+						if (indexP2 == i)
+							set[0] = 12;
 
-					show.afficherCard(c);
+						gotoxy(0 + OFFSET_X, i + OFFSET_Y);
+						color(set[0]);
 
-					set[0] = 7;
-					color(set[0]);
+						show.afficherCard(c);
+
+						set[0] = 7;
+						color(set[0]);
+					}
+
+				}
+				else {
+					if (!GetKeyState(VK_UP) && !GetKeyState(VK_DOWN) && !GetKeyState(VK_RETURN)) {
+						btnIsPressed = false;
+					}
 				}
 			}
 			else
@@ -514,23 +529,23 @@ bool Game::getWinner(Player p)
 
 void Game::afficherWins()
 {
-	gotoxy(50, OFFSET_Y - 2);
+	gotoxy(30, OFFSET_Y - 2);
 	std::cout << "Player 1";
 
 	for (int i = 0; i < _p1.getWinsSize(); i++)
 	{
 		Card* c = _p1.getCardWins(i);
-		gotoxy(50, i + OFFSET_Y);
+		gotoxy(30, i + OFFSET_Y);
 		show.afficherCard(c);
 	}
 
-	gotoxy(70, OFFSET_Y - 2);
+	gotoxy(50, OFFSET_Y - 2);
 	std::cout << "Player 2";
 
 	for (int i = 0; i < _p2.getWinsSize(); i++)
 	{
 		Card* c = _p2.getCardWins(i);
-		gotoxy(70, i + OFFSET_Y);
+		gotoxy(50, i + OFFSET_Y);
 		show.afficherCard(c);
 	}
 }
