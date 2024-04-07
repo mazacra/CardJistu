@@ -51,6 +51,9 @@
     <ClCompile Include="src\Player.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\include\serial\SerialPort.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gameWindow.h">
@@ -70,6 +73,12 @@
     </ClInclude>
     <ClInclude Include="src\Player.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\serial\SerialPort.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\include\json.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

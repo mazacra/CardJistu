@@ -3,7 +3,7 @@
 #include "Afficher.h"
 #include "Game.h"
 
-int main()
+int main_console()
 {
 	char choix = ' ';
 	Game game;
