@@ -23,6 +23,7 @@ public:
 	void showP1_Options();
 	void showP2_Options();
 	void show_Info();
+	void show_Menu();
 
 private:
 	QTimer* timer;
@@ -30,14 +31,17 @@ private:
 
 	QLabel* label_Title;
 	QLabel* label_Sensei;
+	QLabel* label_info;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
 	QPushButton* button_Info;
+	QPushButton* button_Retour;
 
 	QAction* action_btnP1;
 	QAction* action_btnP2;
 	QAction* action_btnInfo;
+	QAction* action_btnRetour;
 };
 
 #endif // !MENU_WINDOW_H

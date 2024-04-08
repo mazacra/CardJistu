@@ -10,18 +10,9 @@ menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
     setAutoFillBackground(true);
     setPalette(pal);
 
-    //Init gridLayout
-    //mainLayout = new QGridLayout(this);
-
     initImg();
     initButtons();
 
-    //Ajout au gridLayout
-    //mainLayout->addWidget(label_Title, 0, 0);
-    //mainLayout->addWidget(button_P1, 1, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(button_P2, 3, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(button_Info, 7, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(label_Sensei, 2, 4);
 }
 
 menuWindow::~menuWindow()
@@ -36,16 +27,26 @@ void menuWindow::initButtons()
     button_P1->setFixedSize(200, 75);
     button_P1->addAction(action_btnP1);
     button_P1->move(100, 275);
+    connect(button_P2, &QPushButton::clicked, this, &menuWindow::showP1_Options);
 
     button_P2 = new QPushButton(tr("2 Joueurs"), this);
     button_P2->setFixedSize(200, 75);
     button_P2->addAction(action_btnP2);
     button_P2->move(100, 425);
+    connect(button_P2, &QPushButton::clicked, this, &menuWindow::showP2_Options);
 
     button_Info = new QPushButton(tr("Informations"), this);
     button_Info->setFixedSize(200, 75);
     button_Info->addAction(action_btnInfo);
     button_Info->move(100, 575);
+    connect(button_Info, &QPushButton::clicked, this, &menuWindow::show_Info);
+
+    button_Retour = new QPushButton(tr("Retour"), this);
+    button_Retour->setFixedSize(150, 50);
+    button_Retour->addAction(action_btnRetour);
+    button_Retour->move(600, 600);
+    connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
+    button_Retour->hide();
 }
 
 void menuWindow::initImg()
@@ -66,13 +67,18 @@ void menuWindow::initImg()
 void menuWindow::initAction()
 {
     action_btnP1 = new QAction();
-    connect(action_btnP1, &QAction::triggered, this, &menuWindow::showP1_Options);
+    //connect(action_btnP1, &QAction::triggered, this, &menuWindow::showP1_Options);
 
     action_btnP2 = new QAction();
-    connect(action_btnP2, &QAction::triggered, this, &menuWindow::showP2_Options);
+    //connect(action_btnP2, &QAction::triggered, this, &menuWindow::showP2_Options);
 
     action_btnInfo = new QAction();
-    connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
+    //connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
+
+    action_btnRetour = new QAction();                       
+    //connect(action_btnRetour, &QAction::triggered, this, &menuWindow::show_Menu);
+    
+
 }
 
 void menuWindow::showP1_Options()
@@ -85,4 +91,42 @@ void menuWindow::showP2_Options()
 
 void menuWindow::show_Info()
 {
+    button_P1->hide();
+    button_P2->hide();
+    button_Info->hide();
+
+    button_Retour->show();
+
+    label_info = new QLabel("Les joueurs commencent chacun avec 5 cartes. \nChaque carte a un element(Feu, Neige ou Eau), un nombre(entre 1 et 10) et une couleur.",this);
+    label_info->setText(label_info->text() + "\nAu debut de chaque manche, chaque joueur choisi une carte a jouer.");
+    label_info->setText(label_info->text() + "\nLa meilleure carte remporte la manche.");
+    label_info->setText(label_info->text() + "\n\t -Le Feu l'emporte sur la Neige");
+    label_info->setText(label_info->text() + "\n\t -La Neige l'emporte sur l'Eau");
+    label_info->setText(label_info->text() + "\n\t -L'Eau l'emporte sur le Feu");
+    label_info->setText(label_info->text() + "\n\t -Si les deux cartes ont le même élément, le plus haut Nombre l'Emporte.\n");
+    label_info->setText(label_info->text() + "\nLa carte gagante est placee dans la pile gagnate du joueur qui a remporté la manche,\n et la carte perdante est éliminee.");
+    label_info->setText(label_info->text() + "\nSi l'element et le nombre est le même,\naucun des joueurs ne l'emportent et ils conservent leur carte\n");
+    label_info->setText(label_info->text() + "\nPour remporter la partie, le joueur doit avoir un set gagnant dans sa pile, soit : ");
+    label_info->setText(label_info->text() + "\n\t -Trois cartes du meme element;");
+    label_info->setText(label_info->text() + "\n\t\t OU");
+    label_info->setText(label_info->text() + "\n\t -Trois cartes d'un element different, chacune de couleur differente.");
+
+
+    QFont font;
+    font.setPointSize(10); 
+    label_info->setFont(font);
+    //label_info->setStyleSheet("color: blue");
+    label_info->move(20, 275);
+    label_info->show();
+
+}
+
+void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
+{
+    button_P1->show();
+    button_P2->show();
+    button_Info->show();
+
+    button_Retour->hide();
+    label_info->hide();
 }
