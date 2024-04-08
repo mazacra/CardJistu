@@ -18,6 +18,9 @@ menuWindow::~menuWindow()
 {
 }
 
+
+#pragma region Init Functions
+
 /// <summary>
 /// Fonction d'initialisation des boutons et de leurs actions
 /// </summary>
@@ -74,7 +77,9 @@ void menuWindow::initAction()
     connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
 }
 
+#pragma endregion
 
+#pragma region Actions
 
 void menuWindow::showP1_Options()
 {
@@ -87,4 +92,6 @@ void menuWindow::showP2_Options()
 void menuWindow::show_Info()
 {
 }
+
+#pragma endregion
 
