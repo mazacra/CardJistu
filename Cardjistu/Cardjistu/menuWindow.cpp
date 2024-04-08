@@ -10,24 +10,17 @@ menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
     setAutoFillBackground(true);
     setPalette(pal);
 
-    //Init gridLayout
-    //mainLayout = new QGridLayout(this);
-
     initImg();
     initButtons();
-
-    //Ajout au gridLayout
-    //mainLayout->addWidget(label_Title, 0, 0);
-    //mainLayout->addWidget(button_P1, 1, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(button_P2, 3, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(button_Info, 7, 0, Qt::AlignLeft);
-    //mainLayout->addWidget(label_Sensei, 2, 4);
 }
 
 menuWindow::~menuWindow()
 {
 }
 
+/// <summary>
+/// Fonction d'initialisation des boutons et de leurs actions
+/// </summary>
 void menuWindow::initButtons()
 {
     initAction();
@@ -48,6 +41,9 @@ void menuWindow::initButtons()
     button_Info->move(100, 575);
 }
 
+/// <summary>
+/// Fonction d<initialisation des images
+/// </summary>
 void menuWindow::initImg()
 {
     label_Title = new QLabel(this);
@@ -63,6 +59,9 @@ void menuWindow::initImg()
     label_Sensei->move(500, 270);
 }
 
+/// <summary>
+/// Fonction d'initialisation des actions des boutons
+/// </summary>
 void menuWindow::initAction()
 {
     action_btnP1 = new QAction();
@@ -75,6 +74,8 @@ void menuWindow::initAction()
     connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
 }
 
+
+
 void menuWindow::showP1_Options()
 {
 }
@@ -86,3 +87,4 @@ void menuWindow::showP2_Options()
 void menuWindow::show_Info()
 {
 }
+
