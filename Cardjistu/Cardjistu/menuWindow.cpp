@@ -1,18 +1,17 @@
 ﻿#include "menuWindow.h"
-#include <QTextEdit>
 
 menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
 {
-	this->setFixedSize(820, 700);
+    this->setFixedSize(820, 700);
 
-	//Background color
-	QPalette pal = QPalette();
-	pal.setColor(QPalette::Window, QColor(244, 242, 197).rgba());
-	setAutoFillBackground(true);
-	setPalette(pal);
+    //Background color
+    QPalette pal = QPalette();
+    pal.setColor(QPalette::Window, QColor(244, 242, 197).rgba());
+    setAutoFillBackground(true);
+    setPalette(pal);
 
-	initImg();
-	initButtons();
+    initImg();
+    initButtons();
 }
 
 menuWindow::~menuWindow()
@@ -27,40 +26,70 @@ menuWindow::~menuWindow()
 /// </summary>
 void menuWindow::initButtons()
 {
-	initAction();
+    initAction();
 
-	button_P1 = new QPushButton(tr("1 Joueur"), this);
-	button_P1->setFixedSize(200, 75);
-	button_P1->addAction(action_btnP1);
-	button_P1->move(100, 275);
+    button_P1 = new QPushButton(tr("1 Joueur"), this);
+    button_P1->setFixedSize(200, 75);
+    connect(button_P1, &QPushButton::clicked, action_btnP1, &QAction::trigger);
+    button_P1->move(100, 275);
 
-	button_P2 = new QPushButton(tr("2 Joueurs"), this);
-	button_P2->setFixedSize(200, 75);
-	button_P2->addAction(action_btnP2);
-	button_P2->move(100, 425);
+    button_P2 = new QPushButton(tr("2 Joueurs"), this);
+    button_P2->setFixedSize(200, 75);
+    connect(button_P2, &QPushButton::clicked, action_btnP2, &QAction::trigger);
+    button_P2->move(100, 425);
 
-	button_Info = new QPushButton(tr("Informations"), this);
-	button_Info->setFixedSize(200, 75);
-	button_Info->addAction(action_btnInfo);
-	button_Info->move(100, 575);
+    button_Info = new QPushButton(tr("Informations"), this);
+    button_Info->setFixedSize(200, 75);
+    connect(button_Info, &QPushButton::clicked, action_btnInfo, &QAction::trigger);
+    button_Info->move(100, 575);
+
+    button_GO = new QPushButton(tr("GO!"), this);
+    button_GO->setFixedSize(200, 75);
+    connect(button_GO, &QPushButton::clicked, action_btnGO, &QAction::trigger);
+    button_GO->move(50, 575);
+    button_GO->hide();
 }
+
 
 /// <summary>
 /// Fonction d<initialisation des images
 /// </summary>
 void menuWindow::initImg()
 {
-	label_Title = new QLabel(this);
-	label_Title->setPixmap(QPixmap("./img/title.png"));
-	label_Title->setScaledContents(true);
-	label_Title->setFixedSize(500, 250);
-	label_Title->move(150, 10);
+    label_Title = new QLabel(this);
+    label_Title->setPixmap(QPixmap("./img/title.png"));
+    label_Title->setScaledContents(true);
+    label_Title->setFixedSize(500, 250);
+    label_Title->move(150, 10);
 
-	label_Sensei = new QLabel(this);
-	label_Sensei->setPixmap(QPixmap("./img/sensei.png"));
-	label_Sensei->setScaledContents(true);
-	label_Sensei->setFixedSize(200, 400);
-	label_Sensei->move(500, 270);
+    label_Sensei = new QLabel(this);
+    label_Sensei->setPixmap(QPixmap("./img/sensei.png"));
+    label_Sensei->setScaledContents(true);
+    label_Sensei->setFixedSize(200, 400);
+    label_Sensei->move(500, 270);
+}
+
+void menuWindow::initLineEdit()
+{
+    p1_instruct = new QLabel(tr("P1, entrez votre nom"), this);
+    p1_instruct->move(100, 280);
+
+    p2_instruct = new QLabel(tr("P2, entrez votre nom"), this);
+    p2_instruct->move(100, 330);
+
+    name_P1 = new QLineEdit(this);
+    name_P1->setPlaceholderText("Nom");
+    name_P1->setFixedSize(200, 25);
+    name_P1->move(100, 300);
+    connect(name_P1, &QLineEdit::returnPressed, this, &menuWindow::getP1Name);
+    name_P1->hide();
+
+    name_P2 = new QLineEdit(this);
+    name_P2->setPlaceholderText("Nom");
+    name_P2->setFixedSize(200, 25);
+    name_P2->move(100, 350);
+    connect(name_P2, &QLineEdit::returnPressed, this, &menuWindow::getP2Name);
+    name_P2->hide();
 }
 
 /// <summary>
@@ -68,104 +97,55 @@ void menuWindow::initImg()
 /// </summary>
 void menuWindow::initAction()
 {
-	action_btnP1 = new QAction();
-	connect(action_btnP1, &QAction::triggered, this, &menuWindow::showP1_Options);
+    action_btnP1 = new QAction();
+    connect(action_btnP1, &QAction::triggered, this, &menuWindow::show1P_Options);
 
-	action_btnP2 = new QAction();
-	connect(action_btnP2, &QAction::triggered, this, &menuWindow::showP2_Options);
+    action_btnP2 = new QAction();
+    connect(action_btnP2, &QAction::triggered, this, &menuWindow::show2P_Options);
 
-	action_btnInfo = new QAction();
-	connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
+    action_btnInfo = new QAction();
+    connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
+
+    action_btnGO = new QAction();
+    connect(action_btnGO, &QAction::triggered, this, &menuWindow::show_Info); //Changer à la bonne fct
 }
 
-#pragma endregion
-
-#pragma region Actions
-
-void menuWindow::showP1_Options()
+void menuWindow::show1P_Options()
 {
+    button_P1->hide();
+    button_P2->hide();
+    button_Info->hide();
+
+    initLineEdit();
+    p1_instruct->show();
+    name_P1->show();
+    button_GO->show();
 }
 
-void menuWindow::showP2_Options()
+void menuWindow::show2P_Options()
 {
+    button_P1->hide();
+    button_P2->hide();
+    button_Info->hide();
+
+    initLineEdit();
+    p1_instruct->show();
+    name_P1->show();
+    p2_instruct->show();
+    name_P2->show();
+    button_GO->show();
 }
 
 void menuWindow::show_Info()
 {
 }
 
-#pragma endregion
-
-void menuWindow::newGame(bool solo)
+void menuWindow::getP1Name()
 {
-	winner = -1;
-	activeP = 0;
-	game = new Game();
-	timer = new QTimer(this);
-
-	game->newGame(solo);
-
-	if (!timer->isActive()) {
-		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
-		timer->start(30);
-	}
+    QString p1Name = name_P1->text();
 }
 
-void menuWindow::gameLoop()
+void menuWindow::getP2Name()
 {
-	if (winner == 0) {
-		if (activeP == 0 || activeP == 1) {
-			//Selection de la carte
-			int i = game->selectCardManette(activeP + 1);
-
-			//-2 == carte choisi
-			if (i == -2) {
-				if (activeP == 0)
-					iCardP1 = iCard;
-				else
-					iCardP2 = iCard;
-
-				//Si on est au 2eme joueur il faut comparer les cartes
-				if (activeP) {
-					activeP = 2;
-					wp = game->winningPlayer();
-				}
-				else {
-					//change pour le joueur 2
-					activeP = !activeP;
-				}
-			}
-			else {
-				//sinon change l'index
-				iCard = i;
-
-				//change l'affichage
-			}
-		}
-		else {
-			//afficher les deux cartes jouées
-
-			//afficher le gagant de la round
-			if (wp == 1) {
-				//Afficher que P1 a gagné
-
-				if (game->getWinner(1))
-					winner = 1;
-			}
-			else if (wp == 2) {
-				//Afficher que P2 a gagné
-
-				if (game->getWinner(2))
-					winner = 2;
-			}
-			else
-			{
-				//Afficher que égalité
-			}
-		}
-	}
-	else
-	{
-		timer->stop();
-	}
+    QString p2Name = name_P2->text();
 }

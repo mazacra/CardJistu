@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QGridLayout>
 #include <QTimer>
+#include <QLineEdit>
 
 #include "Game.h"
 
@@ -21,15 +22,15 @@ public:
 	void initButtons();
 	void initImg();
 	void initAction();
+	void initLineEdit();
 
 	//actions functions
-	void showP1_Options();
-	void showP2_Options();
+	void show1P_Options();
+	void show2P_Options();
 	void show_Info();
 
-	//fonctions jeu
-	void newGame(bool solo);
-	void gameLoop();
+	void getP1Name();
+	void getP2Name();
 
 private:
 	QTimer* timer;
@@ -37,21 +38,21 @@ private:
 
 	QLabel* label_Title;
 	QLabel* label_Sensei;
+	QLabel* p1_instruct;
+	QLabel* p2_instruct;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
 	QPushButton* button_Info;
+	QPushButton* button_GO;
+
+	QLineEdit* name_P1;
+	QLineEdit* name_P2;
 
 	QAction* action_btnP1;
 	QAction* action_btnP2;
 	QAction* action_btnInfo;
-
-	Game* game;
-	int winner;
-	int wp;
-	int activeP;
-	int iCard;
-	int iCardP1, iCardP2;
+	QAction* action_btnGO;
 };
 
 #endif // !MENU_WINDOW_H
