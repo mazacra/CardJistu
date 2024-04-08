@@ -29,6 +29,7 @@ private:
 	QGridLayout* mainLayout;
 
 	QLabel* label_Title;
+	QLabel* label_Sensei;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
