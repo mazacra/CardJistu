@@ -6,6 +6,9 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QTimer>
+
+#include "Game.h"
 
 class menuWindow : public QWidget
 {
@@ -24,6 +27,10 @@ public:
 	void showP2_Options();
 	void show_Info();
 
+	//fonctions jeu
+	void newGame(bool solo);
+	void gameLoop();
+
 private:
 	QTimer* timer;
 	QGridLayout* mainLayout;
@@ -38,6 +45,13 @@ private:
 	QAction* action_btnP1;
 	QAction* action_btnP2;
 	QAction* action_btnInfo;
+
+	Game* game;
+	int winner;
+	int wp;
+	int activeP;
+	int iCard;
+	int iCardP1, iCardP2;
 };
 
 #endif // !MENU_WINDOW_H

@@ -64,7 +64,7 @@ void Game::newGame(bool solo)
 	_p1 = player1;
 	_p2 = player2;
 
-	play();
+	//play();
 }
 
 void Game::play()
@@ -91,8 +91,8 @@ void Game::play()
 			l[1] = selectCardClavier(_p2);
 		}
 
-		if (manette == TRUE)
-			l = selectCardManette(_p1, _p2);
+		//if (manette == TRUE)
+			//l = selectCardManette(_p1, _p2);
 
 		_cp1 = _p1.getCard(l[0]);
 		_cp2 = _p2.getCard(l[1]);
@@ -135,11 +135,11 @@ void Game::play()
 
 		winningPlayer();
 
-		if (getWinner(_p1))
+		if (getWinner(1))
 		{
 			_winningPlayer = 1;
 		}
-		if (getWinner(_p2))
+		if (getWinner(2))
 		{
 			_winningPlayer = 2;
 		}
@@ -195,11 +195,11 @@ int Game::selectCardClavier(Player p)
 	return index;
 }
 
-std::vector<int> Game::selectCardManette(Player p1, Player p2)
+int Game::selectCardManette(int p)
 {
+	Player player = p == 1 ? _p1 : _p2;
 	char raw_msg[255];
-	int indexP1 = 0;
-	int indexP2 = 0;
+	int index = p == 1 ? indexP1 : indexP2;
 	json j_msg_send, j_msg_rcv;
 	std::string str;
 
@@ -210,221 +210,163 @@ std::vector<int> Game::selectCardManette(Player p1, Player p2)
 	std::string accel = "";
 	std::string btn = "";
 
-	//Print une premi�re fois les carte du joueur 1
-	for (int i = 0; i < p1.getDeckSize(); i++)
+	if (player.getAI())
+		return player.AISelectCard();
+	else
 	{
-		Card* c = p1.getCard(i);
+		if (manette) {
+			j_msg_rcv.clear(); // effacer le message precedent
+			btn = "";
+			joystick = "";
+			accel = "";
 
-		set[0] = 7;
-		if (indexP1 == i) {
-			j_msg_send["led"] = (int)c->getColor();
-			j_msg_send["power"] = (int)c->getNumber();
-
-			Game::SendToSerial(arduino, j_msg_send);
-
-			set[0] = 12;
-		}
-
-		gotoxy(0, i + OFFSET_Y);
-		color(set[0]);
-
-		show.afficherCard(c);
-
-		set[0] = 7;
-		color(set[0]);
-	}
-
-	while (cards[0] == -1 || cards[1] == -1) {
-		Sleep(100);
-		//Selection joueur 2
-		//Si le joueur � choisi sa carte on peut le skip
-		if (cards[1] == -1) {
-			if (!p2.getAI()) {
-				if (!btnIsPressed) {
-					if (GetKeyState(VK_UP) && indexP2 > 0) {
-						btnIsPressed = true;
-						indexP2--;
-					}
-					if (GetKeyState(VK_DOWN) && indexP2 < p2.getDeckSize() - 1) {
-						btnIsPressed = true;
-						indexP2++;
-					}
-					if (GetKeyState(VK_RETURN)) {
-						btnIsPressed = true;
-						cards[1] = indexP2;
-					}
-
-
-					for (int i = 0; i < p2.getDeckSize(); i++)
-					{
-						Card* c = p2.getCard(i);
-
-						set[0] = 7;
-						if (indexP2 == i)
-							set[0] = 12;
-
-						gotoxy(0 + OFFSET_X, i + OFFSET_Y);
-						color(set[0]);
-
-						show.afficherCard(c);
-
-						set[0] = 7;
-						color(set[0]);
-					}
-
+			if (arduino->readSerialPort(raw_msg, 255) != 0) {
+				str = raw_msg;
+				if (str.find_last_of('\n') == std::string::npos) {
+					arduino->readSerialPort(raw_msg, 255);
+					str += raw_msg;
 				}
-				else {
-					if (!GetKeyState(VK_UP) && !GetKeyState(VK_DOWN) && !GetKeyState(VK_RETURN)) {
-						btnIsPressed = false;
-					}
+				if (str[0] != '{')
+					str = str.substr(str.find_first_of("\n") + 1, str.length());
+				str = str.substr(0, str.find_last_of('\n') - 1);
+				str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+				// Transfert du message en json
+				if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+					j_msg_rcv = json::parse(str);
+
+					btn = j_msg_rcv["bouton"];
+					joystick = j_msg_rcv["JoyStick"];
+					accel = j_msg_rcv["accel"];
+
+					if (joystick == "jh" && index > 0)
+						index--;
+					if (joystick == "jb" && index < player.getDeckSize() - 1)
+						index++;
+					if (btn == "On" || accel == "myb" || accel == "mxb")
+						return -2;
+
+					//for (int i = 0; i < player.getDeckSize(); i++)
+					//{
+					//	Card* c = player.getCard(i);
+
+					//	set[0] = 7;
+					//	if (indexP1 == i) {
+					//		//if(manette)
+					//		j_msg_send["led"] = (int)c->getColor();
+					//		j_msg_send["power"] = (int)c->getNumber();
+
+					//		Game::SendToSerial(arduino, j_msg_send);
+
+					//		set[0] = 12;
+					//	}
+
+					//	gotoxy(0, i + OFFSET_Y);
+					//	color(set[0]);
+
+					//	show.afficherCard(c);
+
+					//	set[0] = 7;
+					//	color(set[0]);
+					//}
 				}
 			}
-			else
-				cards[1] = p2.AISelectCard();
 		}
-
-		if (cards[0] == -1) {
-			if (manette == TRUE) {
-
-				j_msg_rcv.clear(); // effacer le message precedent
-				btn = "";
-				joystick = "";
-				accel = "";
-
-				if (arduino->readSerialPort(raw_msg, 255) != 0) {
-					str = raw_msg;
-					if (str.find_last_of('\n') == std::string::npos) {
-						arduino->readSerialPort(raw_msg, 255);
-						str += raw_msg;
-					}
-					if (str[0] != '{')
-						str = str.substr(str.find_first_of("\n") + 1, str.length());
-					str = str.substr(0, str.find_last_of('\n') - 1);
-					str = str.substr(str.find_last_of('\n') + 1, str.length());
-
-					// Transfert du message en json
-					if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
-						j_msg_rcv = json::parse(str);
-
-						btn = j_msg_rcv["bouton"];
-						joystick = j_msg_rcv["JoyStick"];
-						accel = j_msg_rcv["accel"];
-
-						if (joystick == "jh" && indexP1 > 0)
-							indexP1--;
-						if (joystick == "jb" && indexP1 < p1.getDeckSize() - 1)
-							indexP1++;
-						if (btn == "On" || accel == "myb" || accel == "mxb")
-							cards[0] = indexP1;
-
-						for (int i = 0; i < p1.getDeckSize(); i++)
-						{
-							Card* c = p1.getCard(i);
-
-							set[0] = 7;
-							if (indexP1 == i) {
-								//if(manette)
-								j_msg_send["led"] = (int)c->getColor();
-								j_msg_send["power"] = (int)c->getNumber();
-
-								Game::SendToSerial(arduino, j_msg_send);
-
-								set[0] = 12;
-							}
-
-							gotoxy(0, i + OFFSET_Y);
-							color(set[0]);
-
-							show.afficherCard(c);
-
-							set[0] = 7;
-							color(set[0]);
-						}
-					}
+		else
+		{
+			if (!btnIsPressed) {
+				if (GetKeyState(VK_UP) && index > 0) {
+					btnIsPressed = true;
+					index--;
 				}
+				if (GetKeyState(VK_DOWN) && index < player.getDeckSize() - 1) {
+					btnIsPressed = true;
+					indexP2++;
+				}
+				if (GetKeyState(VK_RETURN)) {
+					btnIsPressed = true;
+					return -2;
+				}
+
+
+				/*for (int i = 0; i < player.getDeckSize(); i++)
+				{
+					Card* c = player.getCard(i);
+
+					set[0] = 7;
+					if (indexP2 == i)
+						set[0] = 12;
+
+					gotoxy(0 + OFFSET_X, i + OFFSET_Y);
+					color(set[0]);
+
+					show.afficherCard(c);
+
+					set[0] = 7;
+					color(set[0]);
+				}*/
+
 			}
 			else {
-				int set[] = { 7, 7, 7 };
-				char key = 0;
-
-				while (true) {
-					if (key == 72 && indexP1 > 0)
-						indexP1--;
-					if (key == 80 && indexP1 < p1.getDeckSize() - 1)
-						indexP1++;
-					if (key == '\r') {
-						cards[0] = indexP1;
-						break;
-					}
-					for (int i = 0; i < p1.getDeckSize(); i++)
-					{
-						Card* c = p1.getCard(i);
-
-						set[0] = 7;
-						if (indexP1 == i) {
-							set[0] = 12;
-						}
-
-						gotoxy(0, i + OFFSET_Y);
-						color(set[0]);
-
-						show.afficherCard(c);
-
-						set[0] = 7;
-						color(set[0]);
-					}
-
-					key = _getch();
+				if (!GetKeyState(VK_UP) && !GetKeyState(VK_DOWN) && !GetKeyState(VK_RETURN)) {
+					btnIsPressed = false;
 				}
 			}
 		}
 	}
 
+	if (p == 1)
+		indexP1 = index;
+	else
+		indexP2 = index;
 
-	return cards;
+	return index;
 }
 
-Card* Game::winningCard(Card* c1, Card* c2)
+int Game::winningCard(int iC1, int iC2)
 {
-	if (c1->getElement() == c2->getElement() && c1->getNumber() == c2->getNumber()) return nullptr;
+	Card* c1 = _p1.getCard(iC1);
+	Card* c2 = _p2.getCard(iC2);
 
-	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)0) return c1;
-	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)1) return c1;
-	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)2) return c1;
+	if (c1->getElement() == c2->getElement() && c1->getNumber() == c2->getNumber()) return 0;
 
-	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)1) return c2;
-	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)2) return c2;
-	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)0) return c2;
+	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)0) return 1;
+	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)1) return 1;
+	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)2) return 1;
+
+	if (c1->getElement() == (Element)0 && c2->getElement() == (Element)1) return 2;
+	if (c1->getElement() == (Element)1 && c2->getElement() == (Element)2) return 2;
+	if (c1->getElement() == (Element)2 && c2->getElement() == (Element)0) return 2;
 
 
-	if (c1->getNumber() > c2->getNumber()) return c1;
+	if (c1->getNumber() > c2->getNumber()) return 1;
 
-	if (c1->getNumber() < c2->getNumber()) return c2;
+	if (c1->getNumber() < c2->getNumber()) return 2;
 
-	return nullptr;
+	return 0;
 }
 
-Player Game::winningPlayer()
+int Game::winningPlayer()
 {
 	json j_msg_send;
-	Card* c = winningCard(_cp1, _cp2);
+	int wp = winningCard(indexP1, indexP2);
 	char raw_msg[255];
 	json j_msg_rcv;
 	std::string str = "";
 	std::string joystick = "";
 	std::string btn = "";
 
-	if (c != nullptr) {
+
+	if (wp == 1)
+	{
+		Card* c = _p1.getCard(indexP1);
 
 		j_msg_send.clear();
 		j_msg_send["Element"] = (int)c->getElement();
 		j_msg_send["Couleur"] = (int)c->getColor();
 		j_msg_send["Valeur"] = c->getNumber();
 		Game::SendToSerial(arduino, j_msg_send);
-	}
 
-	if (c == _cp1)
-	{
 		_p1.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
@@ -460,11 +402,19 @@ Player Game::winningPlayer()
 			}
 		}
 		//system("pause");
-		return _p1;
+		return 1;
 	}
 
-	if (c == _cp2)
+	if (wp == 2)
 	{
+		Card* c = _p2.getCard(indexP2);
+
+		j_msg_send.clear();
+		j_msg_send["Element"] = (int)c->getElement();
+		j_msg_send["Couleur"] = (int)c->getColor();
+		j_msg_send["Valeur"] = c->getNumber();
+		Game::SendToSerial(arduino, j_msg_send);
+
 		_p2.addToWins(c);
 		system("CLS");
 		gotoxy(25, 5);
@@ -484,17 +434,18 @@ Player Game::winningPlayer()
 			}
 		}
 		//system("pause");
-		return _p2;
+		return 2;
 	}
 
 	system("CLS");
 	gotoxy(25, 5);
 	std::cout << "Aucun gagnant!" << std::endl << std::endl << std::endl;
-	return _p1;
+	return 0;
 }
 
-bool Game::getWinner(Player p)
+bool Game::getWinner(int iP)
 {
+	Player p = iP == 1 ? _p1 : _p2;
 	std::string sF = "";
 	std::string sW = "";
 	std::string sS = "";
