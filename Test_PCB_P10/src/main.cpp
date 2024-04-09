@@ -255,25 +255,37 @@ char* Joystick(){
   int haut = 758;
   int bas = 256;
 
-  /*if(xValue<bas and yValue<bas)
+  if(xValue<bas and yValue<bas)
   {
-    //Serial.println("bas droite");
-    return "jbd";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+      return "jd";
   }
 
   if(xValue<bas and yValue>=bas and yValue<=haut)
   {
-    //Serial.println("droite");
-    return "jd";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+      return "jd";
   }
 
   if(xValue<bas and yValue>haut)
   {
-    //Serial.println("haut droite");
-    return "jhd";
-  }*/
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
 
-  if(xValue>=bas and xValue<=haut and yValue<bas)
+    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+      return "jd";
+  }
+
+  /*if(xValue>=bas and xValue<=haut and yValue<bas)
   {
     if(cptJoystick > 0)
       cptJoystick = 0;
@@ -281,9 +293,9 @@ char* Joystick(){
 
     if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
       return "jb";
-  }
+  }*/
 
-  if(xValue>=bas and xValue<=haut and yValue>haut)
+  /*if(xValue>=bas and xValue<=haut and yValue>haut)
   {
     if(cptJoystick < 0)
       cptJoystick = 0;
@@ -291,25 +303,37 @@ char* Joystick(){
 
     if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
       return "jh";
-  }
+  }*/
 
-  /*if(xValue>haut and yValue<bas)
+  if(xValue>haut and yValue<bas)
   {
-    //Serial.println("bas gauche");
-    return "jbg";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+      return "jg";
   }
 
   if(xValue>haut and yValue>=bas and yValue<=haut)
   {
-    //Serial.println("gauche");
-    return "jg";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+      return "jg";
   }
 
   if(xValue>haut and yValue>haut)
   {
-    //Serial.println("haut gauche");
-    return "jhg";
-  }*/
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+      return "jg";
+  }
 
   if(cptJoystick == lastCpt)
     cptJoystick = 0;

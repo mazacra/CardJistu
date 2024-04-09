@@ -239,9 +239,9 @@ int Game::selectCardManette(int p)
 					joystick = j_msg_rcv["JoyStick"];
 					accel = j_msg_rcv["accel"];
 
-					if (joystick == "jh" && index > 0)
+					if (joystick == "jg" && index > 0)
 						index--;
-					if (joystick == "jb" && index < player.getDeckSize() - 1)
+					if (joystick == "jd" && index < player.getDeckSize() - 1)
 						index++;
 					if (btn == "On" || accel == "myb" || accel == "mxb")
 						return -2;
@@ -518,6 +518,24 @@ void Game::playerTurn()
 	system("pause");
 	show.menuSelection();
 	afficherWins();
+}
+
+std::vector<std::string> Game::getPlayerCards(int p)
+{
+	std::vector<Card*> l = p == 0 ? _p1.getCards() : _p2.getCards();
+	std::vector<std::string> ls = std::vector<std::string>();
+
+	for (int i = 0; i < 5; i++)
+	{
+		Card* c = l[i];
+		std::string s = std::to_string((int)c->getColor());
+		s += std::to_string((int)c->getElement());
+		s += std::to_string(c->getNumber());
+
+		ls.push_back(s);
+	}
+
+	return ls;
 }
 
 void Game::color(int color)

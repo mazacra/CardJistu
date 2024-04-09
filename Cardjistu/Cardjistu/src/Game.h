@@ -25,6 +25,7 @@ public:
 	void afficherWins();
 	void playerTurn();
 	std::string readSerial();
+	std::vector<std::string> getPlayerCards(int p);
 
 	void color(int color);
 	void gotoxy(int x, int y);

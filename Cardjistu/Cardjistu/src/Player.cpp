@@ -43,6 +43,11 @@ Card* Player::getCard(int i)
 	}
 }
 
+std::vector<Card*> Player::getCards()
+{
+	return _deck;
+}
+
 Card* Player::getCardWins(int i)
 {
 	try

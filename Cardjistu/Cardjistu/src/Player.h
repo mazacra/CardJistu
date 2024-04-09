@@ -17,6 +17,7 @@ public:
 	int getDeckSize();
 	int getWinsSize();
 	Card* getCard(int i);
+	std::vector<Card*> getCards();
 	Card* getCardWins(int i);
 	void removeCard(int index);
 
