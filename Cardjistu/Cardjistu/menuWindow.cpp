@@ -20,11 +20,6 @@ menuWindow::~menuWindow()
 }
 
 
-#pragma region Init Functions
-
-/// <summary>
-/// Fonction d'initialisation des boutons et de leurs actions
-/// </summary>
 void menuWindow::initButtons()
 {
 	initAction();
@@ -33,7 +28,7 @@ void menuWindow::initButtons()
     button_P1->setFixedSize(200, 75);
     button_P1->addAction(action_btnP1);
     button_P1->move(100, 275);
-    connect(button_P2, &QPushButton::clicked, this, &menuWindow::showP1_Options);
+    connect(button_P1, &QPushButton::clicked, this, &menuWindow::showP1_Options);
 
     button_P2 = new QPushButton(tr("2 Joueurs"), this);
     button_P2->setFixedSize(200, 75);
@@ -55,9 +50,6 @@ void menuWindow::initButtons()
     button_Retour->hide();
 }
 
-/// <summary>
-/// Fonction d<initialisation des images
-/// </summary>
 void menuWindow::initImg()
 {
 	label_Title = new QLabel(this);
@@ -73,9 +65,6 @@ void menuWindow::initImg()
 	label_Sensei->move(500, 270);
 }
 
-/// <summary>
-/// Fonction d'initialisation des actions des boutons
-/// </summary>
 void menuWindow::initAction()
 {
     action_btnP1 = new QAction();
@@ -92,10 +81,6 @@ void menuWindow::initAction()
     
 
 }
-
-#pragma endregion
-
-#pragma region Actions
 
 void menuWindow::showP1_Options()
 {
