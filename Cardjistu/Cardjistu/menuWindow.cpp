@@ -42,12 +42,18 @@ void menuWindow::initButtons()
 	button_Info->move(100, 575);
 	connect(button_Info, &QPushButton::clicked, this, &menuWindow::show_Info);
 
-	button_Retour = new QPushButton(tr("Retour"), this);
-	button_Retour->setFixedSize(150, 50);
-	button_Retour->addAction(action_btnRetour);
-	button_Retour->move(20, 625);
-	connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
-	button_Retour->hide();
+    button_Retour = new QPushButton(tr("Retour"), this);
+    button_Retour->setFixedSize(150, 50);
+    button_Retour->addAction(action_btnRetour);
+    button_Retour->move(20, 625);
+    connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
+    button_Retour->hide();
+
+	button_GO = new QPushButton(tr("GO!"), this);
+	button_GO->setFixedSize(200, 75);
+	connect(button_GO, &QPushButton::clicked, this, &menuWindow::newGame); //Changer show_info
+	button_GO->move(50, 575);
+	button_GO->hide();
 }
 
 void menuWindow::initImg()
@@ -80,7 +86,32 @@ void menuWindow::initAction()
 
 	action_btnInfo = new QAction();
 
-	action_btnRetour = new QAction();
+    action_btnRetour = new QAction();
+
+	action_btnGO = new QAction();
+}
+
+void menuWindow::initLineEdit()
+{
+	p1_instruct = new QLabel(tr("P1, entrez votre nom"), this);
+	p1_instruct->move(100, 280);
+
+	p2_instruct = new QLabel(tr("P2, entrez votre nom"), this);
+	p2_instruct->move(100, 330);
+
+	name_P1 = new QLineEdit(this);
+	name_P1->setPlaceholderText("Nom");
+	name_P1->setFixedSize(200, 25);
+	name_P1->move(100, 300);
+	connect(name_P1, &QLineEdit::returnPressed, this, &menuWindow::getP1Name);
+	name_P1->hide();
+
+	name_P2 = new QLineEdit(this);
+	name_P2->setPlaceholderText("Nom");
+	name_P2->setFixedSize(200, 25);
+	name_P2->move(100, 350);
+	connect(name_P2, &QLineEdit::returnPressed, this, &menuWindow::getP2Name);
+	name_P2->hide();
 }
 
 void menuWindow::initLabel()
@@ -100,10 +131,30 @@ void menuWindow::initLabel()
 
 void menuWindow::showP1_Options()
 {
+	solo = true;
+	button_P1->hide();
+	button_P2->hide();
+	button_Info->hide();
+
+	initLineEdit();
+	p1_instruct->show();
+	name_P1->show();
+	button_GO->show();
 }
 
 void menuWindow::showP2_Options()
 {
+	solo = false;
+	button_P1->hide();
+	button_P2->hide();
+	button_Info->hide();
+
+	initLineEdit();
+	p1_instruct->show();
+	name_P1->show();
+	p2_instruct->show();
+	name_P2->show();
+	button_GO->show();
 }
 
 void menuWindow::show_Info()
@@ -143,6 +194,16 @@ void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
 
 	label_PlayerName->hide();
 
+}
+
+void menuWindow::getP1Name()
+{
+	QString p1Name = name_P1->text();
+}
+
+void menuWindow::getP2Name()
+{
+	QString p2Name = name_P2->text();
 }
 
 void menuWindow::newGame(bool solo)

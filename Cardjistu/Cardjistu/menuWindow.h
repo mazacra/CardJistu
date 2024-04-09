@@ -8,6 +8,7 @@
 #include <QGridLayout>
 #include <QTimer>
 #include <QTextEdit>
+#include <QLineEdit>
 #include <iostream>
 #include <string>
 
@@ -25,12 +26,16 @@ public:
 	void initImg();
 	void initAction();
 	void initLabel();
+	void initLineEdit();
 
 	//actions functions
 	void showP1_Options();
 	void showP2_Options();
 	void show_Info();
 	void show_Menu();
+
+	void getP1Name();
+	void getP2Name();
 
 	//fonctions jeu
 	void newGame(bool solo);
@@ -47,16 +52,23 @@ private:
 	QLabel* label_CardBG;
 	QLabel* label_info;
 	QLabel* label_PlayerName;
+	QLabel* p1_instruct;
+	QLabel* p2_instruct;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
 	QPushButton* button_Info;
 	QPushButton* button_Retour;
+	QPushButton* button_GO;
+
+	QLineEdit* name_P1;
+	QLineEdit* name_P2;
 
 	QAction* action_btnP1;
 	QAction* action_btnP2;
 	QAction* action_btnInfo;
 	QAction* action_btnRetour;
+	QAction* action_btnGO;
 
 	//Cartes
 	QLabel* c1;
@@ -79,6 +91,7 @@ private:
 	QLabel* c5P;
 	QLabel* c5E;
 
+	bool solo;
 	Game* game;
 	int winner;
 	int wp;
