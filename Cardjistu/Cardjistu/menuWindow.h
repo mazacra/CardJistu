@@ -42,6 +42,7 @@ public:
 	void gameLoop();
 	void createCards();
 	void showPlayerCard(int i);
+	void changeSelected(int last, int newI);
 
 private:
 	QTimer* timer;
@@ -100,6 +101,7 @@ private:
 	int iCard;
 	int iCardP1, iCardP2;
 	std::string p1Name, p2Name;
+	const char* selectedStyle = "border-width: 5px; border-style: solid; border-color: black;";
 };
 
 #endif // !MENU_WINDOW_H

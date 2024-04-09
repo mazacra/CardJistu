@@ -246,8 +246,9 @@ void menuWindow::gameLoop()
 	if (winner != 0) {
 		if (activeP == 0 || activeP == 1) {
 			//label_PlayerName->setText(p1Name.c_str());
-			if(lastActiveP != activeP)
+			if (lastActiveP != activeP) {
 				showPlayerCard(activeP);
+			}
 
 			//Selection de la carte
 			int i = game->selectCardManette(activeP + 1);
@@ -269,11 +270,12 @@ void menuWindow::gameLoop()
 					activeP = !activeP;
 				}
 			}
-			else {
+			else if(iCard != i) {
+				//change l'affichage
+				changeSelected(iCard, i);
+
 				//sinon change l'index
 				iCard = i;
-
-				//change l'affichage
 			}
 			lastActiveP = activeP;
 		}
@@ -373,16 +375,17 @@ void menuWindow::showPlayerCard(int i)
 	{
 		std::string s = l[i];
 		std::string color = "background-color: ";
-		color += s[0] == '0' ? "yellow" : s[0] == '1' ? "red" : s[0] == '2' ? "green" : "blue";
-		std::string element = "background-color: ";
-		element += s[1] == '0' ? "red" : s[1] == '1' ? "blue" : "aqua";
+		color += s[0] == '0' ? "yellow;" : s[0] == '1' ? "red;" : s[0] == '2' ? "green;" : "blue;";
+		std::string element = "./img/";
+		element += s[1] == '0' ? "fire.png" : s[1] == '1' ? "water.png" : "snow.png";
 		const char* power = &s[2];
 
 		switch (i)
 		{
 		case 0:
-			c1->setStyleSheet(c1->styleSheet().append(color.c_str()));
-			c1E->setStyleSheet(element.c_str());
+			c1->setStyleSheet(c1->styleSheet().append(color.c_str()).append(selectedStyle));
+			c1E->setPixmap(QPixmap(element.c_str()));
+			c1E->setScaledContents(true);
 			c1P->setText(power);
 
 			c1->show();
@@ -391,7 +394,8 @@ void menuWindow::showPlayerCard(int i)
 			break;
 		case 1:
 			c2->setStyleSheet(c2->styleSheet().append(color.c_str()));
-			c2E->setStyleSheet(element.c_str());
+			c2E->setPixmap(QPixmap(element.c_str()));
+			c2E->setScaledContents(true);
 			c2P->setText(power);
 
 			c2->show();
@@ -400,7 +404,8 @@ void menuWindow::showPlayerCard(int i)
 			break;
 		case 2:
 			c3->setStyleSheet(c3->styleSheet().append(color.c_str()));
-			c3E->setStyleSheet(element.c_str());
+			c3E->setPixmap(QPixmap(element.c_str()));
+			c3E->setScaledContents(true);
 			c3P->setText(power);
 
 			c3->show();
@@ -409,7 +414,8 @@ void menuWindow::showPlayerCard(int i)
 			break;
 		case 3:
 			c4->setStyleSheet(c4->styleSheet().append(color.c_str()));
-			c4E->setStyleSheet(element.c_str());
+			c4E->setPixmap(QPixmap(element.c_str()));
+			c4E->setScaledContents(true);
 			c4P->setText(power);
 
 			c4->show();
@@ -418,7 +424,8 @@ void menuWindow::showPlayerCard(int i)
 			break;
 		case 4:
 			c5->setStyleSheet(c5->styleSheet().append(color.c_str()));
-			c5E->setStyleSheet(element.c_str());
+			c5E->setPixmap(QPixmap(element.c_str()));
+			c5E->setScaledContents(true);
 			c5P->setText(power);
 
 			c5->show();
@@ -428,5 +435,73 @@ void menuWindow::showPlayerCard(int i)
 		default:
 			break;
 		}
+	}
+}
+
+void menuWindow::changeSelected(int last, int newI)
+{
+	std::string s;
+	int i;
+	switch (last)
+	{
+	case 0:
+		s = c1->styleSheet().toStdString();
+		i = s.find("border-width");
+		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+
+		c1->setStyleSheet(s.c_str());
+		break;
+	case 1:
+		s = c2->styleSheet().toStdString();
+		i = s.find("border-width");
+		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+
+		c2->setStyleSheet(s.c_str());
+		break;
+	case 2:
+		s = c3->styleSheet().toStdString();
+		i = s.find("border-width");
+		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+
+		c3->setStyleSheet(s.c_str());
+		break;
+	case 3:
+		s = c4->styleSheet().toStdString();
+		i = s.find("border-width");
+		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+
+		c4->setStyleSheet(s.c_str());
+		break;
+	case 4:
+		s = c5->styleSheet().toStdString();
+		i = s.find("border-width");
+		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+
+		c5->setStyleSheet(s.c_str());
+		break;
+	default:
+		break;
+	}
+
+	switch (newI)
+	{
+	case 0:
+		c1->setStyleSheet(c1->styleSheet() + selectedStyle);
+		break;
+	case 1:
+		c2->setStyleSheet(c2->styleSheet() + selectedStyle);
+		break;
+	case 2:
+		c3->setStyleSheet(c3->styleSheet() + selectedStyle);
+		s = c3->styleSheet().toStdString();
+		break;
+	case 3:
+		c4->setStyleSheet(c4->styleSheet() + selectedStyle);
+		break;
+	case 4:
+		c5->setStyleSheet(c5->styleSheet() + selectedStyle);
+		break;
+	default:
+		break;
 	}
 }
