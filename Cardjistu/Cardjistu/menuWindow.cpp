@@ -45,7 +45,7 @@ void menuWindow::initButtons()
     button_Retour = new QPushButton(tr("Retour"), this);
     button_Retour->setFixedSize(150, 50);
     button_Retour->addAction(action_btnRetour);
-    button_Retour->move(600, 600);
+    button_Retour->move(20, 625);
     connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
     button_Retour->hide();
 }
@@ -62,24 +62,18 @@ void menuWindow::initImg()
 	label_Sensei->setPixmap(QPixmap("./img/sensei.png"));
 	label_Sensei->setScaledContents(true);
 	label_Sensei->setFixedSize(200, 400);
-	label_Sensei->move(500, 270);
+	label_Sensei->move(550, 270);
 }
 
 void menuWindow::initAction()
 {
     action_btnP1 = new QAction();
-    //connect(action_btnP1, &QAction::triggered, this, &menuWindow::showP1_Options);
 
     action_btnP2 = new QAction();
-    //connect(action_btnP2, &QAction::triggered, this, &menuWindow::showP2_Options);
 
     action_btnInfo = new QAction();
-    //connect(action_btnInfo, &QAction::triggered, this, &menuWindow::show_Info);
 
-    action_btnRetour = new QAction();                       
-    //connect(action_btnRetour, &QAction::triggered, this, &menuWindow::show_Menu);
-    
-
+    action_btnRetour = new QAction();
 }
 
 void menuWindow::showP1_Options()
@@ -99,18 +93,19 @@ void menuWindow::show_Info()
     button_Retour->show();
 
     label_info = new QLabel("Les joueurs commencent chacun avec 5 cartes. \nChaque carte a un element(Feu, Neige ou Eau), un nombre(entre 1 et 10) et une couleur.",this);
-    label_info->setText(label_info->text() + "\nAu debut de chaque manche, chaque joueur choisi une carte a jouer.");
+    label_info->setText(label_info->text() + "\nAu début de chaque manche, chaque joueur choisi une carte a jouer.");
     label_info->setText(label_info->text() + "\nLa meilleure carte remporte la manche.");
     label_info->setText(label_info->text() + "\n\t -Le Feu l'emporte sur la Neige");
     label_info->setText(label_info->text() + "\n\t -La Neige l'emporte sur l'Eau");
     label_info->setText(label_info->text() + "\n\t -L'Eau l'emporte sur le Feu");
     label_info->setText(label_info->text() + "\n\t -Si les deux cartes ont le même élément, le plus haut Nombre l'Emporte.\n");
-    label_info->setText(label_info->text() + "\nLa carte gagante est placee dans la pile gagnate du joueur qui a remporté la manche,\n et la carte perdante est éliminee.");
-    label_info->setText(label_info->text() + "\nSi l'element et le nombre est le même,\naucun des joueurs ne l'emportent et ils conservent leur carte\n");
+    label_info->setText(label_info->text() + "\nLa carte gagnante est placée dans la pile gagnante du joueur qui a remporté la manche,\n et la carte perdante est éliminée.");
+    label_info->setText(label_info->text() + "\nSi l'élément et le nombre est le même,\naucun des joueurs ne l'emportent et ils conservent leur carte\n");
     label_info->setText(label_info->text() + "\nPour remporter la partie, le joueur doit avoir un set gagnant dans sa pile, soit : ");
-    label_info->setText(label_info->text() + "\n\t -Trois cartes du meme element;");
+    label_info->setText(label_info->text() + "\n\t -Trois cartes du même élément;");
     label_info->setText(label_info->text() + "\n\t\t OU");
-    label_info->setText(label_info->text() + "\n\t -Trois cartes d'un element different, chacune de couleur differente.");
+    label_info->setText(label_info->text() + "\n\t -Trois cartes d'un élément différent, chacune de couleur différente.");
+	label_info->setStyleSheet("font-weight: bold;");
 
 
     QFont font;
