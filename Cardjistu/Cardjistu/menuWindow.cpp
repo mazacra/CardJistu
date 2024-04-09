@@ -13,6 +13,7 @@ menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
 	initLabel();
 	initImg();
 	initButtons();
+	initLineEdit();
 }
 
 menuWindow::~menuWindow()
@@ -50,9 +51,9 @@ void menuWindow::initButtons()
     button_Retour->hide();
 
 	button_GO = new QPushButton(tr("GO!"), this);
-	button_GO->setFixedSize(200, 75);
+	button_GO->setFixedSize(100, 25);
 	connect(button_GO, &QPushButton::clicked, this, &menuWindow::newGame); //Changer show_info
-	button_GO->move(50, 575);
+	button_GO->move(350, 370);
 	button_GO->hide();
 }
 
@@ -93,23 +94,25 @@ void menuWindow::initAction()
 
 void menuWindow::initLineEdit()
 {
-	p1_instruct = new QLabel(tr("P1, entrez votre nom"), this);
+	p1_instruct = new QLabel(tr("Joueur 1"), this);
 	p1_instruct->move(100, 280);
+	p1_instruct->hide();
 
-	p2_instruct = new QLabel(tr("P2, entrez votre nom"), this);
-	p2_instruct->move(100, 330);
+	p2_instruct = new QLabel(tr("Joueur 2"), this);
+	p2_instruct->move(270, 510);
+	p2_instruct->hide();
 
 	name_P1 = new QLineEdit(this);
 	name_P1->setPlaceholderText("Nom");
-	name_P1->setFixedSize(200, 25);
+	name_P1->setFixedSize(140, 25);
 	name_P1->move(100, 300);
 	connect(name_P1, &QLineEdit::returnPressed, this, &menuWindow::getP1Name);
 	name_P1->hide();
 
 	name_P2 = new QLineEdit(this);
 	name_P2->setPlaceholderText("Nom");
-	name_P2->setFixedSize(200, 25);
-	name_P2->move(100, 350);
+	name_P2->setFixedSize(140, 25);
+	name_P2->move(270, 530);
 	connect(name_P2, &QLineEdit::returnPressed, this, &menuWindow::getP2Name);
 	name_P2->hide();
 }
@@ -132,11 +135,13 @@ void menuWindow::initLabel()
 void menuWindow::showP1_Options()
 {
 	solo = true;
-	button_P1->hide();
-	button_P2->hide();
-	button_Info->hide();
+	p2_instruct->hide();
+	name_P2->hide();
 
-	initLineEdit();
+	p1_instruct->move(100, 355);
+	name_P1->move(100, 375);
+	button_GO->move(250, 375);
+
 	p1_instruct->show();
 	name_P1->show();
 	button_GO->show();
@@ -145,11 +150,11 @@ void menuWindow::showP1_Options()
 void menuWindow::showP2_Options()
 {
 	solo = false;
-	button_P1->hide();
-	button_P2->hide();
-	button_Info->hide();
 
-	initLineEdit();
+	p1_instruct->move(100, 510);
+	name_P1->move(100, 530);
+	button_GO->move(420, 530);
+
 	p1_instruct->show();
 	name_P1->show();
 	p2_instruct->show();
@@ -209,6 +214,7 @@ void menuWindow::getP2Name()
 void menuWindow::newGame(bool solo)
 {
 	winner = -1;
+	lastActiveP = -1;
 	activeP = 0;
 	iCardP1 = 0;
 	iCardP1 = 0;
@@ -216,6 +222,15 @@ void menuWindow::newGame(bool solo)
 	timer = new QTimer(this);
 
 	label_Sensei->hide();
+	button_GO->hide();
+	button_Info->hide();
+	button_P1->hide();
+	button_P2->hide();
+	p1_instruct->hide();
+	name_P1->hide();
+	p2_instruct->hide();
+	name_P2->hide();
+
 	label_CardBG->show();
 	createCards();
 	game->newGame(solo);
@@ -228,10 +243,11 @@ void menuWindow::newGame(bool solo)
 
 void menuWindow::gameLoop()
 {
-	if (winner == 0) {
+	if (winner != 0) {
 		if (activeP == 0 || activeP == 1) {
-			label_PlayerName->setText(p1Name.c_str());
-			showPlayerCard(activeP);
+			//label_PlayerName->setText(p1Name.c_str());
+			if(lastActiveP != activeP)
+				showPlayerCard(activeP);
 
 			//Selection de la carte
 			int i = game->selectCardManette(activeP + 1);
@@ -259,6 +275,7 @@ void menuWindow::gameLoop()
 
 				//change l'affichage
 			}
+			lastActiveP = activeP;
 		}
 		else {
 			//afficher les deux cartes jouées
@@ -367,26 +384,46 @@ void menuWindow::showPlayerCard(int i)
 			c1->setStyleSheet(c1->styleSheet().append(color.c_str()));
 			c1E->setStyleSheet(element.c_str());
 			c1P->setText(power);
+
+			c1->show();
+			c1E->show();
+			c1P->show();
 			break;
 		case 1:
 			c2->setStyleSheet(c2->styleSheet().append(color.c_str()));
 			c2E->setStyleSheet(element.c_str());
 			c2P->setText(power);
+
+			c2->show();
+			c2E->show();
+			c2P->show();
 			break;
 		case 2:
 			c3->setStyleSheet(c3->styleSheet().append(color.c_str()));
 			c3E->setStyleSheet(element.c_str());
 			c3P->setText(power);
+
+			c3->show();
+			c3E->show();
+			c3P->show();
 			break;
 		case 3:
 			c4->setStyleSheet(c4->styleSheet().append(color.c_str()));
 			c4E->setStyleSheet(element.c_str());
 			c4P->setText(power);
+
+			c4->show();
+			c4E->show();
+			c4P->show();
 			break;
 		case 4:
 			c5->setStyleSheet(c5->styleSheet().append(color.c_str()));
 			c5E->setStyleSheet(element.c_str());
 			c5P->setText(power);
+
+			c5->show();
+			c5E->show();
+			c5P->show();
 			break;
 		default:
 			break;

@@ -41,8 +41,8 @@ void Game::newGame(bool solo)
 		manette = FALSE;
 		//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
 		//exit(1);
-		if (!solo)
-			return;
+		//if (!solo)
+		//	return;
 	}
 	else
 	{
@@ -524,15 +524,17 @@ std::vector<std::string> Game::getPlayerCards(int p)
 {
 	std::vector<Card*> l = p == 0 ? _p1.getCards() : _p2.getCards();
 	std::vector<std::string> ls = std::vector<std::string>();
+	
+	if (l.size() > 0) {
+		for (int i = 0; i < 5; i++)
+		{
+			Card* c = l[i];
+			std::string s = std::to_string((int)c->getColor());
+			s += std::to_string((int)c->getElement());
+			s += std::to_string(c->getNumber());
 
-	for (int i = 0; i < 5; i++)
-	{
-		Card* c = l[i];
-		std::string s = std::to_string((int)c->getColor());
-		s += std::to_string((int)c->getElement());
-		s += std::to_string(c->getNumber());
-
-		ls.push_back(s);
+			ls.push_back(s);
+		}
 	}
 
 	return ls;

@@ -96,6 +96,7 @@ private:
 	int winner;
 	int wp;
 	int activeP;
+	int lastActiveP;
 	int iCard;
 	int iCardP1, iCardP2;
 	std::string p1Name, p2Name;
