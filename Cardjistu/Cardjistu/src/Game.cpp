@@ -540,6 +540,22 @@ std::vector<std::string> Game::getPlayerCards(int p)
 	return ls;
 }
 
+std::vector<std::string> Game::getPlayedCards()
+{
+	std::vector<std::string> l;
+	Card* c = _p1.getCard(indexP1);
+	std::string s = std::to_string((int)c->getColor());
+	s += std::to_string((int)c->getElement());
+	s += std::to_string(c->getNumber());
+	l.push_back(s);
+
+	s = std::to_string((int)c->getColor());
+	s += std::to_string((int)c->getElement());
+	s += std::to_string(c->getNumber());
+	l.push_back(s);
+	return l;
+}
+
 void Game::color(int color)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
