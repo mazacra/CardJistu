@@ -14,13 +14,18 @@ menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
 	initImg();
 	initButtons();
 	initLineEdit();
+
+	widget = new WinWidget(this);
+	widget->setFixedWidth(820);
+	widget->move(0, 240);
+	widget->hide();
 }
 
 menuWindow::~menuWindow()
 {
 }
 
-
+#pragma region init
 void menuWindow::initButtons()
 {
 	initAction();
@@ -43,12 +48,12 @@ void menuWindow::initButtons()
 	button_Info->move(100, 575);
 	connect(button_Info, &QPushButton::clicked, this, &menuWindow::show_Info);
 
-    button_Retour = new QPushButton(tr("Retour"), this);
-    button_Retour->setFixedSize(150, 50);
-    button_Retour->addAction(action_btnRetour);
-    button_Retour->move(20, 625);
-    connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
-    button_Retour->hide();
+	button_Retour = new QPushButton(tr("Retour"), this);
+	button_Retour->setFixedSize(150, 50);
+	button_Retour->addAction(action_btnRetour);
+	button_Retour->move(20, 625);
+	connect(button_Retour, &QPushButton::clicked, this, &menuWindow::show_Menu);
+	button_Retour->hide();
 
 	button_GO = new QPushButton(tr("GO!"), this);
 	button_GO->setFixedSize(100, 25);
@@ -87,7 +92,7 @@ void menuWindow::initAction()
 
 	action_btnInfo = new QAction();
 
-    action_btnRetour = new QAction();
+	action_btnRetour = new QAction();
 
 	action_btnGO = new QAction();
 }
@@ -131,7 +136,9 @@ void menuWindow::initLabel()
 	label_PlayerName->move(50, 100);
 	label_PlayerName->hide();
 }
+#pragma endregion
 
+#pragma region show
 void menuWindow::showP1_Options()
 {
 	solo = true;
@@ -200,6 +207,7 @@ void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
 	label_PlayerName->hide();
 
 }
+#pragma endregion
 
 void menuWindow::getP1Name()
 {
@@ -211,7 +219,8 @@ void menuWindow::getP2Name()
 	QString p2Name = name_P2->text();
 }
 
-void menuWindow::newGame(bool solo)
+#pragma region game
+void menuWindow::newGame()
 {
 	winner = -1;
 	lastActiveP = -1;
@@ -231,24 +240,24 @@ void menuWindow::newGame(bool solo)
 	p2_instruct->hide();
 	name_P2->hide();
 
+	widget->show();
 	label_CardBG->show();
 	createCards();
 	game->newGame(solo);
+	showPlayerCard(activeP);
 
 	if (!timer->isActive()) {
 		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
-		timer->start(30);
+		timer->start(70);
 	}
 }
 
 void menuWindow::gameLoop()
 {
 	if (winner != 0) {
+		lastActiveP = activeP;
 		if (activeP == 0 || activeP == 1) {
 			//label_PlayerName->setText(p1Name.c_str());
-			if (lastActiveP != activeP) {
-				showPlayerCard(activeP);
-			}
 
 			//Selection de la carte
 			int i = game->selectCardManette(activeP + 1);
@@ -260,6 +269,8 @@ void menuWindow::gameLoop()
 				else
 					iCardP2 = iCard;
 
+				changeSelected(iCard, 0);
+				iCard = 0;
 				//Si on est au 2eme joueur il faut comparer les cartes
 				if (activeP) {
 					activeP = 2;
@@ -270,14 +281,17 @@ void menuWindow::gameLoop()
 					activeP = !activeP;
 				}
 			}
-			else if(iCard != i) {
+			else if (iCard != i) {
 				//change l'affichage
 				changeSelected(iCard, i);
 
 				//sinon change l'index
 				iCard = i;
 			}
-			lastActiveP = activeP;
+
+			if (lastActiveP != activeP) {
+				showPlayerCard(activeP);
+			}
 		}
 		else {
 			//afficher les deux cartes jouées
@@ -309,62 +323,55 @@ void menuWindow::gameLoop()
 
 void menuWindow::createCards()
 {
-	if (c1 == nullptr) {
-		c1 = new QLabel(this);
-		c1->setFixedSize(120, 120);
-		c1->move(70, 550);
-		c1->setStyleSheet("border-radius: 25px;");
-		c1E = new QLabel(this);
-		c1E->setFixedSize(50, 50);
-		c1E->move(105, 600);
-		c1P = new QLabel(this);
-		c1P->setStyleSheet("font-size: 18pt;");
-		c1P->move(123, 560);
+	c1 = new QLabel(this);
+	c1->setFixedSize(120, 120);
+	c1->move(70, 550);
+	c1E = new QLabel(this);
+	c1E->setFixedSize(50, 50);
+	c1E->move(105, 600);
+	c1P = new QLabel(this);
+	c1P->setStyleSheet("font-size: 18pt;");
+	c1P->move(123, 560);
 
-		c2 = new QLabel(this);
-		c2->setFixedSize(120, 120);
-		c2->move(210, 550);
-		c2->setStyleSheet("border-radius: 25px;");
-		c2E = new QLabel(this);
-		c2E->setFixedSize(50, 50);
-		c2E->move(245, 600);
-		c2P = new QLabel(this);
-		c2P->setStyleSheet("font-size: 18pt;");
-		c2P->move(261, 560);
+	c2 = new QLabel(this);
+	c2->setFixedSize(120, 120);
+	c2->move(210, 550);
+	c2E = new QLabel(this);
+	c2E->setFixedSize(50, 50);
+	c2E->move(245, 600);
+	c2P = new QLabel(this);
+	c2P->setStyleSheet("font-size: 18pt;");
+	c2P->move(261, 560);
 
-		c3 = new QLabel(this);
-		c3->setFixedSize(120, 120);
-		c3->move(350, 550);
-		c3->setStyleSheet("border-radius: 25px;");
-		c3E = new QLabel(this);
-		c3E->setFixedSize(50, 50);
-		c3E->move(385, 600);
-		c3P = new QLabel(this);
-		c3P->setStyleSheet("font-size: 18pt;");
-		c3P->move(401, 560);
+	c3 = new QLabel(this);
+	c3->setFixedSize(120, 120);
+	c3->move(350, 550);
+	c3E = new QLabel(this);
+	c3E->setFixedSize(50, 50);
+	c3E->move(385, 600);
+	c3P = new QLabel(this);
+	c3P->setStyleSheet("font-size: 18pt;");
+	c3P->move(401, 560);
 
-		c4 = new QLabel(this);
-		c4->setFixedSize(120, 120);
-		c4->move(490, 550);
-		c4->setStyleSheet("border-radius: 25px;");
-		c4E = new QLabel(this);
-		c4E->setFixedSize(50, 50);
-		c4E->move(525, 600);
-		c4P = new QLabel(this);
-		c4P->setStyleSheet("font-size: 18pt;");
-		c4P->move(541, 560);
+	c4 = new QLabel(this);
+	c4->setFixedSize(120, 120);
+	c4->move(490, 550);
+	c4E = new QLabel(this);
+	c4E->setFixedSize(50, 50);
+	c4E->move(525, 600);
+	c4P = new QLabel(this);
+	c4P->setStyleSheet("font-size: 18pt;");
+	c4P->move(541, 560);
 
-		c5 = new QLabel(this);
-		c5->setFixedSize(120, 120);
-		c5->move(630, 550);
-		c5->setStyleSheet("border-radius: 25px;");
-		c5E = new QLabel(this);
-		c5E->setFixedSize(50, 50);
-		c5E->move(665, 600);
-		c5P = new QLabel(this);
-		c5P->setStyleSheet("font-size: 18pt;");
-		c5P->move(681, 560);
-	}
+	c5 = new QLabel(this);
+	c5->setFixedSize(120, 120);
+	c5->move(630, 550);
+	c5E = new QLabel(this);
+	c5E->setFixedSize(50, 50);
+	c5E->move(665, 600);
+	c5P = new QLabel(this);
+	c5P->setStyleSheet("font-size: 18pt;");
+	c5P->move(681, 560);
 }
 
 void menuWindow::showPlayerCard(int i)
@@ -374,7 +381,7 @@ void menuWindow::showPlayerCard(int i)
 	for (int i = 0; i < l.size(); i++)
 	{
 		std::string s = l[i];
-		std::string color = "background-color: ";
+		std::string color = "border-radius: 25px; background-color: ";
 		color += s[0] == '0' ? "yellow;" : s[0] == '1' ? "red;" : s[0] == '2' ? "green;" : "blue;";
 		std::string element = "./img/";
 		element += s[1] == '0' ? "fire.png" : s[1] == '1' ? "water.png" : "snow.png";
@@ -383,7 +390,7 @@ void menuWindow::showPlayerCard(int i)
 		switch (i)
 		{
 		case 0:
-			c1->setStyleSheet(c1->styleSheet().append(color.c_str()).append(selectedStyle));
+			c1->setStyleSheet((color.append(selectedStyle)).c_str());
 			c1E->setPixmap(QPixmap(element.c_str()));
 			c1E->setScaledContents(true);
 			c1P->setText(power);
@@ -393,7 +400,7 @@ void menuWindow::showPlayerCard(int i)
 			c1P->show();
 			break;
 		case 1:
-			c2->setStyleSheet(c2->styleSheet().append(color.c_str()));
+			c2->setStyleSheet(color.c_str());
 			c2E->setPixmap(QPixmap(element.c_str()));
 			c2E->setScaledContents(true);
 			c2P->setText(power);
@@ -403,7 +410,7 @@ void menuWindow::showPlayerCard(int i)
 			c2P->show();
 			break;
 		case 2:
-			c3->setStyleSheet(c3->styleSheet().append(color.c_str()));
+			c3->setStyleSheet(color.c_str());
 			c3E->setPixmap(QPixmap(element.c_str()));
 			c3E->setScaledContents(true);
 			c3P->setText(power);
@@ -413,7 +420,7 @@ void menuWindow::showPlayerCard(int i)
 			c3P->show();
 			break;
 		case 3:
-			c4->setStyleSheet(c4->styleSheet().append(color.c_str()));
+			c4->setStyleSheet(color.c_str());
 			c4E->setPixmap(QPixmap(element.c_str()));
 			c4E->setScaledContents(true);
 			c4P->setText(power);
@@ -423,7 +430,7 @@ void menuWindow::showPlayerCard(int i)
 			c4P->show();
 			break;
 		case 4:
-			c5->setStyleSheet(c5->styleSheet().append(color.c_str()));
+			c5->setStyleSheet(color.c_str());
 			c5E->setPixmap(QPixmap(element.c_str()));
 			c5E->setScaledContents(true);
 			c5P->setText(power);
@@ -447,35 +454,35 @@ void menuWindow::changeSelected(int last, int newI)
 	case 0:
 		s = c1->styleSheet().toStdString();
 		i = s.find("border-width");
-		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+		s = s.substr(0, i) + s.substr(i + 60, s.length());
 
 		c1->setStyleSheet(s.c_str());
 		break;
 	case 1:
 		s = c2->styleSheet().toStdString();
 		i = s.find("border-width");
-		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+		s = s.substr(0, i) + s.substr(i + 60, s.length());
 
 		c2->setStyleSheet(s.c_str());
 		break;
 	case 2:
 		s = c3->styleSheet().toStdString();
 		i = s.find("border-width");
-		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+		s = s.substr(0, i) + s.substr(i + 60, s.length());
 
 		c3->setStyleSheet(s.c_str());
 		break;
 	case 3:
 		s = c4->styleSheet().toStdString();
 		i = s.find("border-width");
-		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+		s = s.substr(0, i) + s.substr(i + 60, s.length());
 
 		c4->setStyleSheet(s.c_str());
 		break;
 	case 4:
 		s = c5->styleSheet().toStdString();
 		i = s.find("border-width");
-		s = s.substr(0, i) + s.substr((int)i + 60, s.length());
+		s = s.substr(0, i) + s.substr(i + 60, s.length());
 
 		c5->setStyleSheet(s.c_str());
 		break;
@@ -504,4 +511,6 @@ void menuWindow::changeSelected(int last, int newI)
 	default:
 		break;
 	}
+
 }
+#pragma endregion

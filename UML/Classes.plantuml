@@ -1,50 +1,60 @@
 @startuml Classes
 left to right direction
 
-class Afficher{
-    + void MenuOuverture()
-    + void SelectionCarte()
-    + void Carte(Card Carte)
-    + void Gagnant(Player joueur)
-
+class main{
+    + int main(argc:int, argv[]:char*)
 }
 
-class Game{
-    - Player p1
-    - Player p2
+class menuWindow{
+    - timer : QTimer*
+	- label_Title : QLabel*
+	- label_info, label_PlayerName : QLabel* 
+	- button_P1, button_P2, button_Info: QPushButton*
+	- c1, c1P, c1E : QLabel* 
 
-    + Game(Player p1, Player p2)
-    + void BouclePrincipale()
-    + void isWinning(Player p)
-    + roundWin(Card P1Card, Card P2Card)
+	- solo : bool
+	- game : Game*
+	- winner, wp, activeP, lastActiveP, iCard, iCardP1, iCardP2 : int
+	- p1Name, p2Name : std::string
+	- selectedStyle : const char*
+
+    + menuWindow(parent : QWidget*);
+	+ ~menuWindow();
+
+	+ initButtons()
+	+ initImg()
+	+ initAction()
+	+ initLabel()
+	+ initLineEdit()
+
+	+ showP1_Options()
+	+ showP2_Options()
+	+ show_Info()
+	+ show_Menu()
+
+	+ newGame(solo : bool)
+	+ gameLoop()
+	+ createCards()
+	+ showPlayerCard(i : int)
+	+ changeSelected(last : int, newI : int)
 }
 
-class Card{
-    - int _power
-    - int _color
-    - int _type
-
-    + Card generateRandomCard()
-    + int getPower()
-    + void setPower(int p)
-    + int getColor()
-    + void setColor(int c)
-    + int getType()
-    + void setType(int t)
+class QWidget{
+}
+class QLabel{
+}
+class QPushButton{
+}
+class QTimer{
+}
+class QLineEdit{
 }
 
-class Player{
-    - vecteur<Carte*> _deck
-    - vecteur<Carte*> _wins
-
-    + bool isWinning()
-}
-
-Player --> Card
-Game --> Player
-
-Game -- Afficher
-Card -- Afficher
-Player -- Afficher
+main --o menuWindow
+menuWindow *-- QTimer
+menuWindow *-- QPushButton
+menuWindow *-- QLineEdit
+menuWindow *-- QLabel
+menuWindow --|> QWidget
 
 @enduml

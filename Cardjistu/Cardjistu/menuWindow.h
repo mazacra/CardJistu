@@ -5,14 +5,14 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
-#include <QGridLayout>
 #include <QTimer>
-#include <QTextEdit>
 #include <QLineEdit>
+#include <QList>
 #include <iostream>
 #include <string>
 
 #include "Game.h"
+#include "winWidget.h"
 
 class menuWindow : public QWidget
 {
@@ -38,7 +38,7 @@ public:
 	void getP2Name();
 
 	//fonctions jeu
-	void newGame(bool solo);
+	void newGame();
 	void gameLoop();
 	void createCards();
 	void showPlayerCard(int i);
@@ -46,7 +46,6 @@ public:
 
 private:
 	QTimer* timer;
-	QGridLayout* mainLayout;
 
 	QLabel* label_Title;
 	QLabel* label_Sensei;
@@ -91,6 +90,11 @@ private:
 	QLabel* c5;
 	QLabel* c5P;
 	QLabel* c5E;
+
+	QList<QLabel*>* winP1;
+	QList<QLabel*>* winP2;
+
+	WinWidget* widget;
 
 	bool solo;
 	Game* game;

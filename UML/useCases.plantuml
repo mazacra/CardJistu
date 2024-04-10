@@ -1,0 +1,28 @@
+@startuml usecase
+left to right direction
+
+:Joueur 1: as A1
+:Joueur 2: as A2
+
+package Menu{
+    (démarrer partie 1 joueur) as UC1
+    (démarrer partie 2 joueur) as UC2
+    (afficher les informations) as UC3
+}
+
+package Jeu{
+    (changer la carte sélectionné) as UC4
+    (choisir la carte) as UC5
+}
+
+
+A1-->UC1
+A1-->UC2
+A1-->UC3
+
+A1--->UC4
+A1-->UC5
+A2-->UC4
+A2-->UC5
+
+@enduml

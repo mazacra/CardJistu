@@ -1,5 +1,5 @@
-SOURCES = main.cpp menuWindow.cpp gameWindow.cpp
-HEADERS = menuWindow.h gameWindow.h
+SOURCES = main.cpp menuWindow.cpp winWidget.cpp
+HEADERS = menuWindow.h winWidget.h
 INCLUDEPATH += src
 DESTDIR = ./build
 QT += widgets
