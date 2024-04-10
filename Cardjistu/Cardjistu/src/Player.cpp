@@ -194,13 +194,13 @@ int Player::AISelectCard()
 	if (cptF != 0 && cptS != 0 && cptW != 0)
 	{
 		if (cptF > cptS && cptF > cptW) {
-			getHighestFire();
+			return getHighestFire();
 		}
 		if (cptS > cptF && cptS > cptW) {
-			getHighestSnow();
+			return getHighestSnow();
 		}
 		if (cptW > cptF && cptW > cptS) {
-			getHighestWater();
+			return getHighestWater();
 		}
 	}
 
