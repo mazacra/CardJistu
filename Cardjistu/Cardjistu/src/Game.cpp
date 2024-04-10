@@ -212,7 +212,7 @@ int Game::selectCardManette(int p)
 
 	if (player.getAI()) {
 		indexP2 = player.AISelectCard();
-		return -2
+		return -2;
 	}
 	else
 	{
@@ -375,7 +375,7 @@ int Game::winningPlayer()
 		//std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
 		show.afficherRoundWinner(1);
 
-		if (manette == FALSE)
+		/*if (manette == FALSE)
 			system("pause");
 
 		if (manette == TRUE)
@@ -402,8 +402,15 @@ int Game::winningPlayer()
 					}
 				}
 			}
-		}
-		//system("pause");
+		}*/
+		
+		_p1.removeCard(indexP1);
+		_p2.removeCard(indexP2);
+		indexP1 = 0;
+		indexP2 = 0;
+		_p1.drawCard();
+		_p2.drawCard();
+
 		return 1;
 	}
 
@@ -423,7 +430,7 @@ int Game::winningPlayer()
 		//std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
 		show.afficherRoundWinner(2);
 
-		if (manette == FALSE)
+		/*if (manette == FALSE)
 			system("pause");
 
 		if (manette == TRUE)
@@ -435,9 +442,24 @@ int Game::winningPlayer()
 				}
 			}
 		}
-		//system("pause");
+		//system("pause");*/
+
+		_p1.removeCard(indexP1);
+		_p2.removeCard(indexP2);
+		indexP1 = 0;
+		indexP2 = 0;
+		_p1.drawCard();
+		_p2.drawCard();
+
 		return 2;
 	}
+
+	_p1.removeCard(indexP1);
+	_p2.removeCard(indexP2);
+	indexP1 = 0;
+	indexP2 = 0;
+	_p1.drawCard();
+	_p2.drawCard();
 
 	system("CLS");
 	gotoxy(25, 5);
@@ -520,6 +542,12 @@ void Game::playerTurn()
 	system("pause");
 	show.menuSelection();
 	afficherWins();
+}
+
+bool Game::inputManette()
+{
+	char raw_msg[255];
+	return arduino->readSerialPort(raw_msg, 255) != 0;
 }
 
 std::vector<std::string> Game::getPlayerCards(int p)

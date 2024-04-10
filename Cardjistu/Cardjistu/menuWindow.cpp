@@ -230,6 +230,7 @@ void menuWindow::newGame()
 	winner = -1;
 	lastActiveP = -1;
 	activeP = 0;
+	iCard = 0;
 	iCardP1 = 0;
 	iCardP1 = 0;
 	game = new Game();
@@ -300,6 +301,15 @@ void menuWindow::gameLoop()
 		}
 		else {
 			//afficher les deux cartes jouées
+			
+
+			if (game->inputManette()) {
+				activeP = 0;
+				iCard = 0;
+				iCardP1 = 0;
+				iCardP2 = 0;
+				showPlayerCard(activeP);
+			}
 
 			//afficher le gagant de la round
 			if (wp == 1) {

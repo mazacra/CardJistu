@@ -24,6 +24,7 @@ public:
 	bool getWinner(int iP);
 	void afficherWins();
 	void playerTurn();
+	bool inputManette();
 	std::string readSerial();
 	std::vector<std::string> getPlayerCards(int p);
 
