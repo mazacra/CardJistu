@@ -27,6 +27,7 @@ public:
 	bool inputManette();
 	std::string readSerial();
 	std::vector<std::string> getPlayerCards(int p);
+	std::vector<std::string> getPlayedCards();
 
 	void color(int color);
 	void gotoxy(int x, int y);

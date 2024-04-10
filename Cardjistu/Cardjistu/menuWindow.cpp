@@ -135,6 +135,12 @@ void menuWindow::initLabel()
 	label_PlayerName = new QLabel(this);
 	label_PlayerName->move(50, 100);
 	label_PlayerName->hide();
+
+	messageGagnant = new QLabel(this);
+	font.setPointSize(12);
+	messageGagnant->setFont(font);
+	messageGagnant->move(280, 300);
+	messageGagnant->hide();
 }
 #pragma endregion
 
@@ -224,6 +230,12 @@ void menuWindow::getP2Name()
 	QString p2Name = name_P2->text();
 }
 
+std::vector<std::string> menuWindow::getCardChose()
+{
+	std::vector<std::string> cartes = game->getPlayedCards();
+	return cartes;
+}
+
 #pragma region game
 void menuWindow::newGame()
 {
@@ -251,6 +263,7 @@ void menuWindow::newGame()
 	createCards();
 	game->newGame(solo);
 	showPlayerCard(activeP);
+
 
 	if (!timer->isActive()) {
 		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
@@ -301,7 +314,7 @@ void menuWindow::gameLoop()
 		}
 		else {
 			//afficher les deux cartes jouées
-			
+			showCardChose();
 
 			if (game->inputManette()) {
 				activeP = 0;
@@ -314,12 +327,16 @@ void menuWindow::gameLoop()
 			//afficher le gagant de la round
 			if (wp == 1) {
 				//Afficher que P1 a gagné
+				messageGagnant->setText("Le vainqueur de cette manche est ");
+				messageGagnant->setText(messageGagnant->text() + name_P1->text());
 
 				if (game->getWinner(1))
 					winner = 1;
 			}
 			else if (wp == 2) {
 				//Afficher que P2 a gagné
+				messageGagnant->setText("Le vainqueur de cette manche est ");
+				messageGagnant->setText(messageGagnant->text() + name_P2->text());
 
 				if (game->getWinner(2))
 					winner = 2;
@@ -327,7 +344,9 @@ void menuWindow::gameLoop()
 			else
 			{
 				//Afficher que égalité
+				messageGagnant->setText("Égalité");
 			}
+			messageGagnant->show();
 		}
 	}
 	else
@@ -387,6 +406,32 @@ void menuWindow::createCards()
 	c5P = new QLabel(this);
 	c5P->setStyleSheet("font-size: 18pt;");
 	c5P->move(681, 560);
+
+	c1Choisi = new QLabel(this);
+	c1Choisi->setFixedSize(120, 120);
+	c1Choisi->move(210, 350);
+	c1EChoisi = new QLabel(this);
+	c1EChoisi->setFixedSize(50, 50);
+	c1EChoisi->move(245, 400);
+	c1PChoisi = new QLabel(this);
+	c1PChoisi->move(261, 360);
+	c1PChoisi->setStyleSheet("font-size: 18pt;");
+	c1Choisi->hide();
+	c1EChoisi->hide();
+	c1PChoisi->hide();
+
+	c2Choisi = new QLabel(this);
+	c2Choisi->setFixedSize(120, 120);
+	c2Choisi->move(490, 350);
+	c2EChoisi = new QLabel(this);
+	c2EChoisi->setFixedSize(50, 50);
+	c2EChoisi->move(525, 400);
+	c2PChoisi = new QLabel(this);
+	c2PChoisi->move(541, 360);
+	c2PChoisi->setStyleSheet("font-size: 18pt;");
+	c2Choisi->hide();
+	c2EChoisi->hide();
+	c2PChoisi->hide();
 }
 
 void menuWindow::showPlayerCard(int i)
@@ -527,5 +572,67 @@ void menuWindow::changeSelected(int last, int newI)
 		break;
 	}
 
+}
+
+
+void menuWindow::showCardChose()
+{
+	toggleCard();
+
+	std::vector<std::string> cartes = getCardChose();
+	std::string color = "background-color: ";
+	color += cartes[0][0] == '0' ? "yellow;" : cartes[0][0] == '1' ? "red;" : cartes[0][0] == '2' ? "green;" : "blue;";
+	std::string element = "./img/";
+	element += cartes[0][1] == '0' ? "fire.png" : cartes[0][1] == '1' ? "water.png" : "snow.png";
+	const char* power = &cartes[0][2];
+
+	c1Choisi->setStyleSheet(c1Choisi->styleSheet().append(color.c_str()).append(selectedStyle));
+	c1EChoisi->setPixmap(QPixmap(element.c_str()));
+	c1EChoisi->setScaledContents(true);
+	c1PChoisi->setText(power);
+
+	c1Choisi->show();
+	c1EChoisi->show();
+	c1PChoisi->show();
+
+	//element = "";
+	color += cartes[1][0] == '0' ? "yellow;" : cartes[1][0] == '1' ? "red;" : cartes[1][0] == '2' ? "green;" : "blue;";
+	element = "./img/";
+	element += cartes[1][1] == '0' ? "fire.png" : cartes[1][1] == '1' ? "water.png" : "snow.png";
+	power = &cartes[1][2];
+
+	c2Choisi->setStyleSheet(c2Choisi->styleSheet().append(color.c_str()).append(selectedStyle));
+	c2EChoisi->setPixmap(QPixmap(element.c_str()));
+	c2EChoisi->setScaledContents(true);
+	c2PChoisi->setText(power);
+
+	c2Choisi->show();
+	c2EChoisi->show();
+	c2PChoisi->show();
+}
+
+void menuWindow::toggleCard()
+{
+	c1->setVisible(!c1->isVisible());
+	c1E->setVisible(!c1E->isVisible());
+	c1P->setVisible(!c1P->isVisible());
+
+	c2->setVisible(!c2->isVisible());
+	c2E->setVisible(!c2E->isVisible());
+	c2P->setVisible(!c2P->isVisible());
+
+	c3->setVisible(!c3->isVisible());
+	c3E->setVisible(!c3E->isVisible());
+	c3P->setVisible(!c3P->isVisible());
+
+	c4->setVisible(!c4->isVisible());
+	c4E->setVisible(!c4E->isVisible());
+	c4P->setVisible(!c4P->isVisible());
+
+	c5->setVisible(!c5->isVisible());
+	c5E->setVisible(!c5E->isVisible());
+	c5P->setVisible(!c5P->isVisible());
+
+	label_CardBG->setVisible(!label_CardBG->isVisible());
 }
 #pragma endregion

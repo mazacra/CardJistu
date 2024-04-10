@@ -33,9 +33,12 @@ public:
 	void showP2_Options();
 	void show_Info();
 	void show_Menu();
+	void showCardChose();
+	void toggleCard();
 
 	void getP1Name();
 	void getP2Name();
+	std::vector<std::string> getCardChose();
 
 	//fonctions jeu
 	void newGame();
@@ -54,6 +57,7 @@ private:
 	QLabel* label_PlayerName;
 	QLabel* p1_instruct;
 	QLabel* p2_instruct;
+	QLabel* messageGagnant;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
@@ -90,6 +94,15 @@ private:
 	QLabel* c5;
 	QLabel* c5P;
 	QLabel* c5E;
+
+	//Carte choisi
+	QLabel* c1Choisi;
+	QLabel* c1PChoisi;
+	QLabel* c1EChoisi;
+
+	QLabel* c2Choisi;
+	QLabel* c2PChoisi;
+	QLabel* c2EChoisi;
 
 	QList<QLabel*>* winP1;
 	QList<QLabel*>* winP2;
