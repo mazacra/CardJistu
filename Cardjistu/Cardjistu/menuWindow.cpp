@@ -567,10 +567,9 @@ void menuWindow::changeSelected(int last, int newI)
 
 void menuWindow::showCardChose()
 {
-	//toggleCard();
+	toggleCard();
 
-	//std::vector<std::string> cartes = getCardChose();
-	std::vector<std::string> cartes = { "123","022" };
+	std::vector<std::string> cartes = getCardChose();
 	std::string color = "background-color: ";
 	color += cartes[0][0] == '0' ? "yellow;" : cartes[0][0] == '1' ? "red;" : cartes[0][0] == '2' ? "green;" : "blue;";
 	std::string element = "./img/";
