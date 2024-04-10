@@ -210,8 +210,10 @@ int Game::selectCardManette(int p)
 	std::string accel = "";
 	std::string btn = "";
 
-	if (player.getAI())
-		return player.AISelectCard();
+	if (player.getAI()) {
+		indexP2 = player.AISelectCard();
+		return -2
+	}
 	else
 	{
 		if (manette) {
