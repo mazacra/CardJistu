@@ -174,6 +174,11 @@ void menuWindow::show_Info()
 	button_P1->hide();
 	button_P2->hide();
 	button_Info->hide();
+	p1_instruct->hide();
+	name_P1->hide();
+	p2_instruct->hide();
+	name_P2->hide();
+	button_GO->hide();
 
 	button_Retour->show();
 
