@@ -403,13 +403,6 @@ int Game::winningPlayer()
 				}
 			}
 		}*/
-		
-		_p1.removeCard(indexP1);
-		_p2.removeCard(indexP2);
-		indexP1 = 0;
-		indexP2 = 0;
-		_p1.drawCard();
-		_p2.drawCard();
 
 		return 1;
 	}
@@ -444,22 +437,8 @@ int Game::winningPlayer()
 		}
 		//system("pause");*/
 
-		_p1.removeCard(indexP1);
-		_p2.removeCard(indexP2);
-		indexP1 = 0;
-		indexP2 = 0;
-		_p1.drawCard();
-		_p2.drawCard();
-
 		return 2;
 	}
-
-	_p1.removeCard(indexP1);
-	_p2.removeCard(indexP2);
-	indexP1 = 0;
-	indexP2 = 0;
-	_p1.drawCard();
-	_p2.drawCard();
 
 	system("CLS");
 	gotoxy(25, 5);
@@ -481,15 +460,15 @@ bool Game::getWinner(int iP)
 
 			if (c->getElement() == (Element)0) {
 				if (sF.find((int)c->getColor()) == std::string::npos)
-					sF += (int)c->getColor();
+					sF += std::to_string((int)c->getColor());
 			}
 			if (c->getElement() == (Element)1) {
 				if (sW.find((int)c->getColor()) == std::string::npos)
-					sW += (int)c->getColor();
+					sW += std::to_string((int)c->getColor());
 			}
 			if (c->getElement() == (Element)2) {
 				if (sS.find((int)c->getColor()) == std::string::npos)
-					sS += (int)c->getColor();
+					sS += std::to_string((int)c->getColor());
 			}
 
 			if (sF.size() > 0 && sW.size() > 0 && sS.size() > 0)
@@ -550,6 +529,16 @@ bool Game::inputManette()
 	return arduino->readSerialPort(raw_msg, 255) != 0;
 }
 
+void Game::drawCards()
+{
+	_p1.removeCard(indexP1);
+	_p2.removeCard(indexP2);
+	indexP1 = 0;
+	indexP2 = 0;
+	_p1.drawCard();
+	_p2.drawCard();
+}
+
 std::vector<std::string> Game::getPlayerCards(int p)
 {
 	std::vector<Card*> l = p == 0 ? _p1.getCards() : _p2.getCards();
@@ -579,6 +568,7 @@ std::vector<std::string> Game::getPlayedCards()
 	s += std::to_string(c->getNumber());
 	l.push_back(s);
 
+	c = _p2.getCard(indexP2);
 	s = std::to_string((int)c->getColor());
 	s += std::to_string((int)c->getElement());
 	s += std::to_string(c->getNumber());

@@ -139,7 +139,6 @@ void menuWindow::initLabel()
 	messageGagnant = new QLabel(this);
 	font.setPointSize(12);
 	messageGagnant->setFont(font);
-	messageGagnant->move(280, 300);
 	messageGagnant->hide();
 }
 #pragma endregion
@@ -208,6 +207,7 @@ void menuWindow::show_Info()
 
 void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
 {
+
 	button_P1->show();
 	button_P2->show();
 	button_Info->show();
@@ -248,6 +248,9 @@ void menuWindow::newGame()
 	game = new Game();
 	timer = new QTimer(this);
 
+	if (solo)
+		name_P2->setText("AI");
+
 	label_Sensei->hide();
 	button_GO->hide();
 	button_Info->hide();
@@ -273,7 +276,7 @@ void menuWindow::newGame()
 
 void menuWindow::gameLoop()
 {
-	if (winner != 0) {
+	if (winner == -1) {
 		lastActiveP = activeP;
 		if (activeP == 0 || activeP == 1) {
 			//label_PlayerName->setText(p1Name.c_str());
@@ -314,44 +317,85 @@ void menuWindow::gameLoop()
 		}
 		else {
 			//afficher les deux cartes jouées
-			showCardChose();
-
-			if (game->inputManette()) {
-				activeP = 0;
-				iCard = 0;
-				iCardP1 = 0;
-				iCardP2 = 0;
-				showPlayerCard(activeP);
-			}
+			if(c1Choisi->isHidden())
+				showCardChose();
 
 			//afficher le gagant de la round
 			if (wp == 1) {
 				//Afficher que P1 a gagné
 				messageGagnant->setText("Le vainqueur de cette manche est ");
 				messageGagnant->setText(messageGagnant->text() + name_P1->text());
+				messageGagnant->move((410) - (messageGagnant->width()/2), 300);
 
-				if (game->getWinner(1))
+				if (game->getWinner(1)) {
 					winner = 1;
+					return;
+				}
 			}
 			else if (wp == 2) {
 				//Afficher que P2 a gagné
 				messageGagnant->setText("Le vainqueur de cette manche est ");
 				messageGagnant->setText(messageGagnant->text() + name_P2->text());
+				messageGagnant->move((410) - (messageGagnant->width()/2), 300);
 
-				if (game->getWinner(2))
+				if (game->getWinner(2)) {
 					winner = 2;
+					return;
+				}
 			}
 			else
 			{
 				//Afficher que égalité
 				messageGagnant->setText("Égalité");
+				messageGagnant->move((410) - (messageGagnant->width() / 2), 300);
 			}
 			messageGagnant->show();
+
+			if (game->inputManette()) {
+				toggleCard();
+				c1Choisi->hide();
+				c1EChoisi->hide();
+				c1PChoisi->hide();
+				c2Choisi->hide();
+				c2EChoisi->hide();
+				c2PChoisi->hide();
+				messageGagnant->hide();
+
+				if (wp == 1)
+					widget->addWin(0, game->getPlayedCards()[0].c_str());
+				else if (wp == 2)
+					widget->addWin(1, game->getPlayedCards()[1].c_str());
+
+				game->drawCards();
+
+				activeP = 0;
+				iCard = 0;
+				iCardP1 = 0;
+				iCardP2 = 0;
+				showPlayerCard(activeP);
+			}
 		}
 	}
 	else
 	{
-		timer->stop();
+		c1Choisi->hide();
+		c1EChoisi->hide();
+		c1PChoisi->hide();
+		c2Choisi->hide();
+		c2EChoisi->hide();
+		c2PChoisi->hide();
+
+		std::string s = "Le gagnant est ";
+		s += winner == 1 ? name_P1->text().toStdString() : name_P2->text().toStdString();
+		messageGagnant->setText(s.c_str());
+		messageGagnant->move((410) - (messageGagnant->width() / 2), 300);
+		messageGagnant->show();
+
+		if(game->inputManette()){
+			messageGagnant->hide();
+			show_Menu();
+			timer->stop();
+		}
 	}
 }
 
@@ -596,6 +640,7 @@ void menuWindow::showCardChose()
 	c1PChoisi->show();
 
 	//element = "";
+	color = "background-color: ";
 	color += cartes[1][0] == '0' ? "yellow;" : cartes[1][0] == '1' ? "red;" : cartes[1][0] == '2' ? "green;" : "blue;";
 	element = "./img/";
 	element += cartes[1][1] == '0' ? "fire.png" : cartes[1][1] == '1' ? "water.png" : "snow.png";
@@ -613,6 +658,8 @@ void menuWindow::showCardChose()
 
 void menuWindow::toggleCard()
 {
+	widget->setVisible(!widget->isVisible());
+
 	c1->setVisible(!c1->isVisible());
 	c1E->setVisible(!c1E->isVisible());
 	c1P->setVisible(!c1P->isVisible());
