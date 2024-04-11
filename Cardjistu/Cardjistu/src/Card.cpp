@@ -5,9 +5,9 @@
 
 Card::Card() 
 {
-	_element = (Element)(rand() % ELEMENTS);
-	_number = (rand() % NUMBERS);
-	_color = (Color)(rand() % COLORS);
+	_element = (Element)((rand()) % ELEMENTS);
+	_number = ((rand()) % NUMBERS);
+	_color = (Color)((rand()) % COLORS);
 }
 
 Card::~Card()

@@ -17,15 +17,22 @@ int cptJoystick;
 bool btnPressed;
 bool accelActivated;
 int compt = 0;
+int cptMuons = 1;
 
 void serialEvent() { shouldRead_ = true; }
 
-void sendMsg(char* J, char* A, char* B) {
+void sendMsg(char* J = nullptr, char* A = nullptr, char* B = nullptr) {
   StaticJsonDocument<500> doc;
+
+  if(J == nullptr && A == nullptr && B == nullptr){
+    doc["Muons"] = cptMuons;
+    cptMuons = 1;
+  }else{
   // Elements du message
-  doc["bouton"] = B;
-  doc["JoyStick"] = J;
-  doc["accel"] = A;
+    doc["bouton"] = B;
+    doc["JoyStick"] = J;
+    doc["accel"] = A;
+  }
 
   // Serialisation
   serializeJson(doc, Serial);
@@ -465,6 +472,11 @@ void readMsg()  //ajouter les output des del
     return;
   }
   
+  parse_msg = doc["Muons"];
+  if(!parse_msg.isNull()){
+    sendMsg();
+  }
+
   parse_msg = doc["Element"];
   if (!parse_msg.isNull())
   {
@@ -498,6 +510,13 @@ void readMsg()  //ajouter les output des del
 
 }
 
+char* Muons(){
+  int v = analogRead(A7);
+
+  if(v > 515){
+    cptMuons++;
+  }
+}
 
 void setup() {
   Serial.begin(9600);

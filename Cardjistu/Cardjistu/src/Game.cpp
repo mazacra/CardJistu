@@ -47,8 +47,35 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
-
 	Player player1, player2;
+
+	int cpt;
+	json j_msg_send, j_msg_rcv;
+	char raw_msg[255];
+	j_msg_send.clear();
+	j_msg_send["Muons"] = 1;
+	Game::SendToSerial(arduino, j_msg_send);
+
+	while (arduino->readSerialPort(raw_msg, 255) == 0) {}
+
+	std::string str = raw_msg;
+	if (str.find_last_of('\n') == std::string::npos) {
+		arduino->readSerialPort(raw_msg, 255);
+		str += raw_msg;
+	}
+	if (str[0] != '{')
+		str = str.substr(str.find_first_of("\n") + 1, str.length());
+	str = str.substr(0, str.find_last_of('\n') - 1);
+	str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+	// Transfert du message en json
+	if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+		j_msg_rcv = json::parse(str);
+
+		cpt = j_msg_rcv["Muons"];
+	}
+
+	srand(static_cast<long int>(time(NULL)) + cpt);
 
 	player1.generateDeck();
 	player2.generateDeck();
@@ -533,8 +560,34 @@ void Game::playerTurn()
 
 bool Game::inputManette()
 {
+	json j_msg_rcv;
 	char raw_msg[255];
-	return arduino->readSerialPort(raw_msg, 255) != 0;
+	std::string str;
+	std::string joystick = "";
+	std::string btn = "";
+
+	if (arduino->readSerialPort(raw_msg, 255) != 0) {
+		str = raw_msg;
+		if (str.find_last_of('\n') == std::string::npos) {
+			arduino->readSerialPort(raw_msg, 255);
+			str += raw_msg;
+		}
+		if (str[0] != '{')
+			str = str.substr(str.find_first_of("\n") + 1, str.length());
+		str = str.substr(0, str.find_last_of('\n') - 1);
+		str = str.substr(str.find_last_of('\n') + 1, str.length());
+
+		if (str.find('}') != std::string::npos && str.find('{') != std::string::npos) {
+			j_msg_rcv = json::parse(str);
+
+			btn = j_msg_rcv["bouton"];
+			joystick = j_msg_rcv["JoyStick"];
+
+			if (btn != "" || joystick != "")
+				return true;
+		}
+	}
+	return false;
 }
 
 void Game::drawCards()
@@ -551,7 +604,7 @@ std::vector<std::string> Game::getPlayerCards(int p)
 {
 	std::vector<Card*> l = p == 0 ? _p1.getCards() : _p2.getCards();
 	std::vector<std::string> ls = std::vector<std::string>();
-	
+
 	if (l.size() > 0) {
 		for (int i = 0; i < 5; i++)
 		{

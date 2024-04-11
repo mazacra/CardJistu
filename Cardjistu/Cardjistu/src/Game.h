@@ -26,7 +26,6 @@ public:
 	void playerTurn();
 	bool inputManette();
 	void drawCards();
-	std::string readSerial();
 	std::vector<std::string> getPlayerCards(int p);
 	std::vector<std::string> getPlayedCards();
 
