@@ -23,17 +23,7 @@ Game::Game()
 	CONSOLE_CURSOR_INFO cursorInfo;
 	cursorInfo.bVisible = false;
 	btnIsPressed = false;
-}
 
-Game::~Game()
-{
-
-}
-
-void Game::newGame(bool solo)
-{
-	//if (manette == true)
-	//{
 	const char* com = "COM3";
 	arduino = new SerialPort(com, BAUD);
 
@@ -48,7 +38,15 @@ void Game::newGame(bool solo)
 	{
 		manette = true;
 	}
-	//}
+}
+
+Game::~Game()
+{
+
+}
+
+void Game::newGame(bool solo)
+{
 
 	Player player1, player2;
 
@@ -241,10 +239,20 @@ int Game::selectCardManette(int p)
 					joystick = j_msg_rcv["JoyStick"];
 					accel = j_msg_rcv["accel"];
 
-					if (joystick == "jg" && index > 0)
+					if (joystick == "jg" && index > 0) {
 						index--;
-					if (joystick == "jd" && index < player.getDeckSize() - 1)
+
+						j_msg_send["led"] = (int)player.getCard(index)->getColor();
+						j_msg_send["power"] = (int)player.getCard(index)->getNumber();
+						Game::SendToSerial(arduino, j_msg_send);
+					}
+					if (joystick == "jd" && index < player.getDeckSize() - 1) {
 						index++;
+
+						j_msg_send["led"] = (int)player.getCard(index)->getColor();
+						j_msg_send["power"] = (int)player.getCard(index)->getNumber();
+						Game::SendToSerial(arduino, j_msg_send);
+					}
 					if (btn == "On" || accel == "myb" || accel == "mxb")
 						return -2;
 

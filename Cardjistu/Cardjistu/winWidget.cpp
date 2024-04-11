@@ -13,42 +13,7 @@ WinWidget::WinWidget(QWidget* parent) : QWidget(parent) {
 	layout->setColumnMinimumWidth(5, 30);
 	layout->setColumnMinimumWidth(6, 30);
 
-	QLabel* l = new QLabel();
-	l->setFixedSize(25, 25);
-
-	l->setPixmap(QPixmap("./img/fire.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 0);
-
-	l = new QLabel();
-	l->setFixedSize(25, 25);
-	l->setPixmap(QPixmap("./img/water.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 1);
-
-	l = new QLabel();
-	l->setFixedSize(25, 25);
-	l->setPixmap(QPixmap("./img/snow.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 2);
-
-	l = new QLabel();
-	l->setFixedSize(25, 25);
-	l->setPixmap(QPixmap("./img/fire.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 4);
-
-	l = new QLabel();
-	l->setFixedSize(25, 25);
-	l->setPixmap(QPixmap("./img/water.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 5);
-
-	l = new QLabel();
-	l->setFixedSize(25, 25);
-	l->setPixmap(QPixmap("./img/snow.png"));
-	l->setScaledContents(true);
-	layout->addWidget(l, 0, 6);
+	reset();
 }
 
 WinWidget::~WinWidget() {
@@ -101,4 +66,62 @@ void WinWidget::addWin(int p, const char* text)
 			cptNP2++;
 		}
 	}
+}
+
+void WinWidget::reset()
+{
+	while (layout->count()) 
+	{
+		QWidget* widget = layout->itemAt(0)->widget(); 
+		if (widget) 
+		{ 
+			layout->removeWidget(widget); 
+			delete widget; 
+		}
+	}
+
+	QLabel* l = new QLabel();
+	l->setFixedSize(25, 25);
+
+	l->setPixmap(QPixmap("./img/fire.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 0);
+
+	l = new QLabel();
+	l->setFixedSize(25, 25);
+	l->setPixmap(QPixmap("./img/water.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 1);
+
+	l = new QLabel();
+	l->setFixedSize(25, 25);
+	l->setPixmap(QPixmap("./img/snow.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 2);
+
+	l = new QLabel();
+	l->setFixedSize(25, 25);
+	l->setPixmap(QPixmap("./img/fire.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 4);
+
+	l = new QLabel();
+	l->setFixedSize(25, 25);
+	l->setPixmap(QPixmap("./img/water.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 5);
+
+	l = new QLabel();
+	l->setFixedSize(25, 25);
+	l->setPixmap(QPixmap("./img/snow.png"));
+	l->setScaledContents(true);
+	layout->addWidget(l, 0, 6);
+
+	cptFP1 = 1;
+	cptNP1 = 1;
+	cptEP1 = 1;
+
+	cptFP2 = 1;
+	cptNP2 = 1;
+	cptEP2 = 1;
 }

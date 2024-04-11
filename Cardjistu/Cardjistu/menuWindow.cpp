@@ -24,6 +24,7 @@ menuWindow::menuWindow(QWidget* parent = nullptr) : QWidget(parent)
 	cWidget->setFixedWidth(820);
 	cWidget->move(0, 0);
 	cWidget->hide();
+	game = new Game();
 }
 
 menuWindow::~menuWindow()
@@ -93,6 +94,14 @@ void menuWindow::initImg()
 	label_CardBG->setFixedSize(820, 200);
 	label_CardBG->move(0, 500);
 	label_CardBG->hide();
+
+	label_Belt = new QLabel(this);
+	label_Belt->setPixmap(QPixmap("./img/Black_Belt.png"));
+	label_Belt->setScaledContents(true);
+	label_Belt->setFixedSize(200, 150);
+	label_Belt->move(160, 500);
+	label_Belt->hide();
+
 }
 
 void menuWindow::initAction()
@@ -137,10 +146,20 @@ void menuWindow::initLineEdit()
 
 void menuWindow::initLabel()
 {
-	label_info = new QLabel(this);
-	label_info->setStyleSheet("font-weight: bold;");
 	QFont font;
+	font.setPointSize(24);
+
+	label_Win = new QLabel(this);
+	label_Win->setFont(font);
+	label_Win->setStyleSheet("font-weight: bold;");
+	label_Win->setFixedSize(420, 300);
+	label_Win->move(50, 250);
+	label_Win->setAlignment(Qt::AlignCenter);
+	label_Win->hide();
+
+	label_info = new QLabel(this);
 	font.setPointSize(10);
+	label_info->setStyleSheet("font-weight: bold;");
 	label_info->setFont(font);
 	label_info->move(20, 275);
 	label_info->hide();
@@ -150,8 +169,11 @@ void menuWindow::initLabel()
 	label_PlayerName->hide();
 
 	messageGagnant = new QLabel(this);
-	font.setPointSize(12);
+	font.setPointSize(24);
 	messageGagnant->setFont(font);
+	messageGagnant->setStyleSheet("font-weight: bold;");
+	messageGagnant->setFixedSize(820, 100);
+	messageGagnant->move(0, 250);
 	messageGagnant->hide();
 
 	overlayscreen = new QLabel(this);
@@ -161,6 +183,10 @@ void menuWindow::initLabel()
 	overlayscreen->hide();
 
 	text = new QLabel(this);
+	text->setFont(font);
+	text->setStyleSheet("font-weight: bold;");
+	text->setFixedSize(820, 100);
+	text->move(0, 300);
 }
 #pragma endregion
 
@@ -246,10 +272,9 @@ void menuWindow::showTurn(int i)
 	toggleCard();
 	std::string s = i == 0 ? name_P1->text().toStdString() : name_P2->text().toStdString();
 	s += ", selectionnez une carte";
-	text->setText(s.c_str());
-	text->adjustSize();
-	text->move(this->width()/2, this->height()/2);
 	text->show();
+	text->setAlignment(Qt::AlignCenter);
+	text->setText(s.c_str());
 }
 #pragma endregion
 
@@ -278,11 +303,14 @@ void menuWindow::newGame()
 	iCard = 0;
 	iCardP1 = 0;
 	iCardP1 = 0;
-	game = new Game();
 	timer = new QTimer(this);
 
+	if (name_P1->text() == "")
+		name_P1->setText("Joueur 1");
 	if (solo)
 		name_P2->setText("AI");
+	else if (name_P2->text() == "")
+		name_P2->setText("Joueur 2");
 
 	label_Sensei->hide();
 	button_GO->hide();
@@ -305,14 +333,14 @@ void menuWindow::newGame()
 	showTurn(activeP);
 	if (!timer->isActive()) {
 		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
-		timer->start(70);
+		timer->start(60);
 	}
 }
 
 void menuWindow::gameLoop()
 {
 	if (!text->isHidden()) {
-		if (game->inputManette()){
+		if (game->inputManette()) {
 			text->hide();
 			toggleCard();
 			//overlayscreen->hide();
@@ -321,7 +349,6 @@ void menuWindow::gameLoop()
 	else if (winner == -1) {
 		lastActiveP = activeP;
 		if (activeP == 0 || activeP == 1) {
-			//label_PlayerName->setText(p1Name.c_str());
 
 			//Selection de la carte
 			int i = game->selectCardManette(activeP + 1);
@@ -339,6 +366,7 @@ void menuWindow::gameLoop()
 				if (activeP) {
 					activeP = 2;
 					wp = game->winningPlayer();
+					return;
 				}
 				else {
 					//change pour le joueur 2
@@ -355,12 +383,13 @@ void menuWindow::gameLoop()
 
 			if (lastActiveP != activeP) {
 				showPlayerCard(activeP);
-				showTurn(activeP);
+				if (!solo)
+					showTurn(activeP);
 			}
 		}
 		else {
 			//afficher les deux cartes jouées
-			if(c1Choisi->isHidden())
+			if (c1Choisi->isHidden())
 				showCardChose();
 
 			//afficher le gagant de la round
@@ -368,7 +397,7 @@ void menuWindow::gameLoop()
 				//Afficher que P1 a gagné
 				messageGagnant->setText("Le vainqueur de cette manche est ");
 				messageGagnant->setText(messageGagnant->text() + name_P1->text());
-				messageGagnant->move((410) - (messageGagnant->width()/2), 300);
+				messageGagnant->setAlignment(Qt::AlignCenter);
 
 				if (game->getWinner(1)) {
 					winner = 1;
@@ -379,7 +408,7 @@ void menuWindow::gameLoop()
 				//Afficher que P2 a gagné
 				messageGagnant->setText("Le vainqueur de cette manche est ");
 				messageGagnant->setText(messageGagnant->text() + name_P2->text());
-				messageGagnant->move((410) - (messageGagnant->width()/2), 300);
+				messageGagnant->setAlignment(Qt::AlignCenter);
 
 				if (game->getWinner(2)) {
 					winner = 2;
@@ -390,7 +419,7 @@ void menuWindow::gameLoop()
 			{
 				//Afficher que égalité
 				messageGagnant->setText("Égalité");
-				messageGagnant->move((410) - (messageGagnant->width() / 2), 300);
+				messageGagnant->setAlignment(Qt::AlignCenter);
 			}
 			messageGagnant->show();
 
@@ -428,16 +457,22 @@ void menuWindow::gameLoop()
 		c2EChoisi->hide();
 		c2PChoisi->hide();
 
-		std::string s = "Le gagnant est ";
+		std::string s = "Bravo ";
 		s += winner == 1 ? name_P1->text().toStdString() : name_P2->text().toStdString();
-		messageGagnant->setText(s.c_str());
-		messageGagnant->move((410) - (messageGagnant->width() / 2), 300);
-		messageGagnant->show();
+		s += "\n Voici une ceinture noire\n pour tes efforts.\n Je suis fier de toi!";
+		label_Win->setText(s.c_str());
+		label_Win->show();
+		label_Sensei->show();
+		label_Belt->show();
 
-		if(game->inputManette()){
-			messageGagnant->hide();
+		if (game->inputManette()) {
+			label_Win->hide();
+			label_Belt->hide();
 			show_Menu();
 			timer->stop();
+			wWidget->reset();
+			name_P1->setText("");
+			name_P2->setText("");
 		}
 	}
 }

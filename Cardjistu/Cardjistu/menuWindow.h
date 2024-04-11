@@ -56,8 +56,10 @@ private:
 	QLabel* label_Title;
 	QLabel* label_Sensei;
 	QLabel* label_CardBG;
+	QLabel* label_Belt;
 	QLabel* label_info;
 	QLabel* label_PlayerName;
+	QLabel* label_Win;
 	QLabel* p1_instruct;
 	QLabel* p2_instruct;
 	QLabel* messageGagnant;

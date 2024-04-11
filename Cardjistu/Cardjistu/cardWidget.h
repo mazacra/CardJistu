@@ -17,6 +17,7 @@ public:
 	void createCards();
 	void showPlayerCard(std::vector<std::string> l);
 	void changeSelected(int last, int newI);
+	void resetCard();
 
 private:
 

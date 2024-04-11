@@ -25,6 +25,7 @@ public:
 	~WinWidget();
 
 	void addWin(int p, const char* text);
+	void reset();
 };
 
 #endif

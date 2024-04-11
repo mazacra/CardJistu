@@ -82,6 +82,7 @@ void CardWidget::showPlayerCard(std::vector<std::string> l)
 			c1->show();
 			c1E->show();
 			c1P->show();
+			c1P->adjustSize();
 			break;
 		case 1:
 			c2->setStyleSheet(color.c_str());
@@ -92,6 +93,7 @@ void CardWidget::showPlayerCard(std::vector<std::string> l)
 			c2->show();
 			c2E->show();
 			c2P->show();
+			c2P->adjustSize();
 			break;
 		case 2:
 			c3->setStyleSheet(color.c_str());
@@ -102,6 +104,7 @@ void CardWidget::showPlayerCard(std::vector<std::string> l)
 			c3->show();
 			c3E->show();
 			c3P->show();
+			c3P->adjustSize();
 			break;
 		case 3:
 			c4->setStyleSheet(color.c_str());
@@ -112,6 +115,7 @@ void CardWidget::showPlayerCard(std::vector<std::string> l)
 			c4->show();
 			c4E->show();
 			c4P->show();
+			c4P->adjustSize();
 			break;
 		case 4:
 			c5->setStyleSheet(color.c_str());
@@ -122,6 +126,7 @@ void CardWidget::showPlayerCard(std::vector<std::string> l)
 			c5->show();
 			c5E->show();
 			c5P->show();
+			c5P->adjustSize();
 			break;
 		default:
 			break;
@@ -195,4 +200,8 @@ void CardWidget::changeSelected(int last, int newI)
 	default:
 		break;
 	}
+}
+
+void CardWidget::resetCard()
+{
 }
