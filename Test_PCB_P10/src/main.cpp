@@ -15,6 +15,7 @@ volatile bool shouldRead_ = false;
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 int cptJoystick;
 bool btnPressed;
+bool accelActivated;
 int compt = 0;
 
 void serialEvent() { shouldRead_ = true; }
@@ -74,12 +75,12 @@ void PrintCouleur(int couleur){
 // put function definitions here:
 char* Bouton() {
   if(!btnPressed){
-    if(!digitalRead(38)){
+    if(!digitalRead(38) || !digitalRead(36) || !digitalRead(34) || !digitalRead(32)){
       btnPressed = true;
       return "On";
     }
   }else{
-    if(digitalRead(38)){
+    if(digitalRead(38) || !digitalRead(36) || !digitalRead(34) || !digitalRead(32)){
         btnPressed = false;
     }
   }
@@ -368,7 +369,10 @@ char* Accel()
       //Serial.println("mouvement x vers le bas");
       //*/
       delay(delait);
-      return "mxb";
+      if(!accelActivated){
+        accelActivated = true;
+        return "mxb";
+      }
       break;
     }else if (dx > 40){
       //*
@@ -376,7 +380,10 @@ char* Accel()
       //Serial.println("mouvement x vers le haut");
       //*/
       delay(delait);
-      return "mxh";
+      if(!accelActivated){
+        accelActivated = true;
+        return "mxh";
+      }
       break;
     }
 
@@ -386,7 +393,10 @@ char* Accel()
       //Serial.println("mouvement y vers le bas");
       //*/
       delay(delait);
-      return "myb";
+      if(!accelActivated){
+        accelActivated = true;
+        return "myb";
+      }
       break;
     }else if (dy > 40){
       //*
@@ -394,7 +404,10 @@ char* Accel()
       //Serial.println("mouvement y vers le haut");
       //*/
       delay(delait);
-      return "myh";
+      if(!accelActivated){
+        accelActivated = true;
+        return "myh";
+      }
       break;
     }
 
@@ -404,7 +417,10 @@ char* Accel()
       //Serial.println("mouvement z vers le bas");
       //*/
       delay(delait);
-      return "mzb";
+      if(!accelActivated){
+        accelActivated = true;
+        return "mzb";
+      }
       break;
     }else if (dz > 30){
       //*
@@ -412,7 +428,10 @@ char* Accel()
       //Serial.println("mouvement z vers le haut");
       //*/
       delay(delait);
-      return "mzh";
+      if(!accelActivated){
+        accelActivated = true;
+        return "mzh";
+      }
       break;
     }
       x_depart = x;
@@ -424,6 +443,8 @@ char* Accel()
     //Serial.println(i);
   }
 
+  if(accelActivated)
+    accelActivated = false;
   return "";
 }  
 

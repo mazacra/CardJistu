@@ -253,7 +253,7 @@ int Game::selectCardManette(int p)
 						j_msg_send["power"] = (int)player.getCard(index)->getNumber();
 						Game::SendToSerial(arduino, j_msg_send);
 					}
-					if (btn == "On" || accel == "myb" || accel == "mxb")
+					if (btn == "On" || accel == "mzh")
 						return -2;
 
 					//for (int i = 0; i < player.getDeckSize(); i++)
