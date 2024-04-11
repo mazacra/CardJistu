@@ -33,6 +33,8 @@ public:
 	void showP2_Options();
 	void show_Info();
 	void show_Menu();
+	void showTurn(int i);
+	void hideP1Turn();
 	void showCardChose();
 	void toggleCard();
 
@@ -58,12 +60,15 @@ private:
 	QLabel* p1_instruct;
 	QLabel* p2_instruct;
 	QLabel* messageGagnant;
+	QLabel* overlayscreen;
+	QLabel* text;
 
 	QPushButton* button_P1; 
 	QPushButton* button_P2; 
 	QPushButton* button_Info;
 	QPushButton* button_Retour;
 	QPushButton* button_GO;
+	QPushButton* button_Choix;
 
 	QLineEdit* name_P1;
 	QLineEdit* name_P2;
@@ -73,6 +78,7 @@ private:
 	QAction* action_btnInfo;
 	QAction* action_btnRetour;
 	QAction* action_btnGO;
+	QAction* action_btnChoix;
 
 	//Cartes
 	QLabel* c1;
