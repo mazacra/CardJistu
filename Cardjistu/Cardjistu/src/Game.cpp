@@ -32,13 +32,13 @@ Game::~Game()
 
 void Game::newGame(bool solo)
 {
-	//if (manette == TRUE)
+	//if (manette == true)
 	//{
 	const char* com = "COM3";
 	arduino = new SerialPort(com, BAUD);
 
 	if (!arduino->isConnected()) {
-		manette = FALSE;
+		manette = false;
 		//std::cerr << "Impossible de se connecter au port " << std::string(com) << ". Fermeture du programme!" << std::endl;
 		//exit(1);
 		//if (!solo)
@@ -46,7 +46,7 @@ void Game::newGame(bool solo)
 	}
 	else
 	{
-		manette = TRUE;
+		manette = true;
 	}
 	//}
 
@@ -85,13 +85,13 @@ void Game::play()
 		afficherWins();
 
 		std::vector<int> l = { -1, -1 };
-		if (manette == FALSE)
+		if (manette == false)
 		{
 			l[0] = selectCardClavier(_p1);
 			l[1] = selectCardClavier(_p2);
 		}
 
-		//if (manette == TRUE)
+		//if (manette == true)
 			//l = selectCardManette(_p1, _p2);
 
 		_cp1 = _p1.getCard(l[0]);
@@ -105,9 +105,9 @@ void Game::play()
 		gotoxy(15, 7);
 		show.afficherCard(_cp2);
 		std::cout << std::endl << std::endl << std::endl;
-		if (manette == FALSE)
+		if (manette == false)
 			system("pause");
-		else if (manette == TRUE)
+		else if (manette == true)
 		{
 			while (btn == "" && joystick == "") {
 				j_msg_rcv.clear();
@@ -375,10 +375,10 @@ int Game::winningPlayer()
 		//std::cout << "P1 gagne la manche!" << std::endl << std::endl << std::endl;
 		show.afficherRoundWinner(1);
 
-		/*if (manette == FALSE)
+		/*if (manette == false)
 			system("pause");
 
-		if (manette == TRUE)
+		if (manette == true)
 		{
 			while (btn == "" && joystick == "") {
 				j_msg_rcv.clear();
@@ -423,10 +423,10 @@ int Game::winningPlayer()
 		//std::cout << "P2 gagne la manche!" << std::endl << std::endl << std::endl;
 		show.afficherRoundWinner(2);
 
-		/*if (manette == FALSE)
+		/*if (manette == false)
 			system("pause");
 
-		if (manette == TRUE)
+		if (manette == true)
 		{
 			while (str == "") {
 				Sleep(100);

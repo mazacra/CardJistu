@@ -13,6 +13,7 @@
 
 #include "Game.h"
 #include "winWidget.h"
+#include <cardWidget.h>
 
 class menuWindow : public QWidget
 {
@@ -80,27 +81,6 @@ private:
 	QAction* action_btnGO;
 	QAction* action_btnChoix;
 
-	//Cartes
-	QLabel* c1;
-	QLabel* c1P;
-	QLabel* c1E;
-		  
-	QLabel* c2;
-	QLabel* c2P;
-	QLabel* c2E;
-		  
-	QLabel* c3;
-	QLabel* c3P;
-	QLabel* c3E;
-		  
-	QLabel* c4;
-	QLabel* c4P;
-	QLabel* c4E;
-		  
-	QLabel* c5;
-	QLabel* c5P;
-	QLabel* c5E;
-
 	//Carte choisi
 	QLabel* c1Choisi;
 	QLabel* c1PChoisi;
@@ -113,7 +93,8 @@ private:
 	QList<QLabel*>* winP1;
 	QList<QLabel*>* winP2;
 
-	WinWidget* widget;
+	WinWidget* wWidget;
+	CardWidget* cWidget;
 
 	bool solo;
 	Game* game;

@@ -27,6 +27,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="cardWidget.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -56,12 +59,37 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="cardWidget.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <ClInclude Include="menuWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <CustomBuild Include="winWidget.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="debug\moc_cardWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_cardWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <CustomBuild Include="debug\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="release\moc_predefs.h.cbt">
+      <Filter>Generated Files</Filter>
+    </CustomBuild>
+    <ClCompile Include="debug\moc_winWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_winWidget.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="src\include\serial\SerialPort.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -80,28 +108,5 @@
     <ClInclude Include="src\Player.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="debug\moc_predefs.h.cbt">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="release\moc_predefs.h.cbt">
-      <Filter>Generated Files</Filter>
-    </CustomBuild>
-    <ClCompile Include="debug\moc_winWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-    <ClCompile Include="release\moc_winWidget.cpp">
-      <Filter>Generated Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="img\card_bg.png" />
-    <Image Include="img\fire.png" />
-    <Image Include="img\oldtitle.png" />
-    <Image Include="img\sensei.png" />
-    <Image Include="img\snow.png" />
-    <Image Include="img\title.png" />
-    <Image Include="img\water.png" />
   </ItemGroup>
 </Project>
