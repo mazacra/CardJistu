@@ -214,6 +214,7 @@ void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
 
 	button_Retour->hide();
 	label_info->hide();
+	label_Sensei->show();
 
 	label_PlayerName->hide();
 
