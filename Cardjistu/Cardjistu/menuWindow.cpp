@@ -57,9 +57,15 @@ void menuWindow::initButtons()
 
 	button_GO = new QPushButton(tr("GO!"), this);
 	button_GO->setFixedSize(100, 25);
-	connect(button_GO, &QPushButton::clicked, this, &menuWindow::newGame); //Changer show_info
+	connect(button_GO, &QPushButton::clicked, this, &menuWindow::newGame);
 	button_GO->move(350, 370);
 	button_GO->hide();
+
+	//button_Choix = new QPushButton(tr("GO!!!!!!!!!!!"), this);
+	//button_Choix->setFixedSize(100, 25);
+	//connect(button_GO, &QPushButton::clicked, this, &menuWindow::hideP1Turn); //Changer show_info
+	//button_Choix->move(350, 370);
+	//button_Choix->hide();
 }
 
 void menuWindow::initImg()
@@ -95,6 +101,8 @@ void menuWindow::initAction()
 	action_btnRetour = new QAction();
 
 	action_btnGO = new QAction();
+
+	//action_btnChoix = new QAction();
 }
 
 void menuWindow::initLineEdit()
@@ -140,6 +148,14 @@ void menuWindow::initLabel()
 	font.setPointSize(12);
 	messageGagnant->setFont(font);
 	messageGagnant->hide();
+
+	overlayscreen = new QLabel(this);
+	overlayscreen->setStyleSheet("background-color: red;");
+	overlayscreen->setFixedSize(820, 700);
+	overlayscreen->move(0, 240);
+	overlayscreen->hide();
+
+	text = new QLabel(this);
 }
 #pragma endregion
 
@@ -219,6 +235,17 @@ void menuWindow::show_Menu() //Rajouter tout les nouveaux éléments à enlever
 	label_PlayerName->hide();
 
 }
+
+void menuWindow::showTurn(int i)
+{
+	toggleCard();
+	std::string s = i == 0 ? name_P1->text().toStdString() : name_P2->text().toStdString();
+	s += ", selectionnez une carte";
+	text->setText(s.c_str());
+	text->adjustSize();
+	text->move(this->width()/2, this->height()/2);
+	text->show();
+}
 #pragma endregion
 
 void menuWindow::getP1Name()
@@ -268,7 +295,7 @@ void menuWindow::newGame()
 	game->newGame(solo);
 	showPlayerCard(activeP);
 
-
+	showTurn(activeP);
 	if (!timer->isActive()) {
 		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
 		timer->start(70);
@@ -277,7 +304,14 @@ void menuWindow::newGame()
 
 void menuWindow::gameLoop()
 {
-	if (winner == -1) {
+	if (!text->isHidden()) {
+		if (game->inputManette()){
+			text->hide();
+			toggleCard();
+			//overlayscreen->hide();
+		}
+	}
+	else if (winner == -1) {
 		lastActiveP = activeP;
 		if (activeP == 0 || activeP == 1) {
 			//label_PlayerName->setText(p1Name.c_str());
@@ -314,6 +348,7 @@ void menuWindow::gameLoop()
 
 			if (lastActiveP != activeP) {
 				showPlayerCard(activeP);
+				showTurn(activeP);
 			}
 		}
 		else {
