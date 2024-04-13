@@ -19,6 +19,11 @@ bool accelActivated;
 int compt = 0;
 int cptMuons = 1;
 
+int lastX = 0;
+int lastY = 0;
+int lastZ = 0;
+unsigned long lastAccel = 0;
+
 void serialEvent() { shouldRead_ = true; }
 
 void sendMsg(char* J = nullptr, char* A = nullptr, char* B = nullptr) {
@@ -87,7 +92,7 @@ char* Bouton() {
       return "On";
     }
   }else{
-    if(digitalRead(38) || !digitalRead(36) || !digitalRead(34) || !digitalRead(32)){
+    if(digitalRead(38) && digitalRead(36) && digitalRead(34) && digitalRead(32)){
         btnPressed = false;
     }
   }
@@ -269,7 +274,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick--;
 
-    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
       return "jd";
   }
 
@@ -279,7 +284,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick--;
 
-    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
       return "jd";
   }
 
@@ -289,7 +294,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick--;
 
-    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
       return "jd";
   }
 
@@ -319,7 +324,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick++;
 
-    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
       return "jg";
   }
 
@@ -329,7 +334,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick++;
 
-    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
       return "jg";
   }
 
@@ -339,7 +344,7 @@ char* Joystick(){
       cptJoystick = 0;
     cptJoystick++;
 
-    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
       return "jg";
   }
 
@@ -349,110 +354,103 @@ char* Joystick(){
   return "";
 }
 
-
 char* Accel()
 {
-  int delait = 100;
-  int x_depart = analogRead(A2);
-  int y_depart = analogRead(A3);
-  int z_depart = analogRead(A4);
-  int i = 0;
+  if(millis() - lastAccel > 100 || lastAccel == 0){
+    lastAccel = millis();
+    int i = 0;
+    int x;
+    int y;
+    int z;
 
-  while(i < 3) //Mettre un break pour sortir de la boucle
-  {
+    while(i < 3) //Mettre un break pour sortir de la boucle
+    {
+      x = analogRead(A2);
+      y = analogRead(A3);
+      z = analogRead(A4);
 
-    int x = analogRead(A2);
-    int y = analogRead(A3);
-    int z = analogRead(A4);
+      //difference
+      int dx = lastX - x;
+      int dy = lastY - y;
+      int dz = lastZ - z;
 
-    //difference
-    int dx = x_depart - x;
-    int dy = y_depart - y;
-    int dz = z_depart - z;
-    
-    if (dx < -40) {
-      //*
-      //Serial.println(dx);
-      //Serial.println("mouvement x vers le bas");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "mxb";
+      if (dx < -40) {
+        //*
+        //Serial.println(dx);
+        //Serial.println("mouvement x vers le bas");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "mxb";
+        }
+        break;
+      }else if (dx > 40){
+        //*
+        //Serial.println(dx);
+        //Serial.println("mouvement x vers le haut");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "mxh";
+        }
+        break;
       }
-      break;
-    }else if (dx > 40){
-      //*
-      //Serial.println(dx);
-      //Serial.println("mouvement x vers le haut");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "mxh";
+
+      if (dy < -40) {
+        //*
+        //Serial.println(dy);
+        //Serial.println("mouvement y vers le bas");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "myb";
+        }
+        break;
+      }else if (dy > 40){
+        //*
+        //Serial.println(dy);
+        //Serial.println("mouvement y vers le haut");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "myh";
+        }
+        break;
       }
-      break;
+
+      if (dz < -40) {
+        //*
+        //Serial.println(dz);
+        //Serial.println("mouvement z vers le bas");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "mzb";
+        }
+        break;
+      }else if (dz > 30){
+        //*
+        //Serial.println(dz);
+        //Serial.println("mouvement z vers le haut");
+        //*/
+        if(!accelActivated){
+          accelActivated = true;
+          return "mzh";
+        }
+        break;
+      }
+
+      lastX = x;
+      lastY = y;
+      lastZ = z;
+      i++;
+      //Serial.println(i);
+
+      if(accelActivated)
+        accelActivated = false;
     }
-
-    if (dy < -40) {
-      //*
-      //Serial.println(dy);
-      //Serial.println("mouvement y vers le bas");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "myb";
-      }
-      break;
-    }else if (dy > 40){
-      //*
-      //Serial.println(dy);
-      //Serial.println("mouvement y vers le haut");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "myh";
-      }
-      break;
-    }
-
-    if (dz < -40) {
-      //*
-      //Serial.println(dz);
-      //Serial.println("mouvement z vers le bas");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "mzb";
-      }
-      break;
-    }else if (dz > 30){
-      //*
-      //Serial.println(dz);
-      //Serial.println("mouvement z vers le haut");
-      //*/
-      delay(delait);
-      if(!accelActivated){
-        accelActivated = true;
-        return "mzh";
-      }
-      break;
-    }
-      x_depart = x;
-      y_depart = y;
-      z_depart = z;
-
-    delay(100);
-    i++;
-    //Serial.println(i);
-  }
-
-  if(accelActivated)
-    accelActivated = false;
   return "";
+  }
 }  
 
 void readMsg()  //ajouter les output des del
@@ -547,7 +545,8 @@ void setup() {
 
 void loop() {
   char* J = Joystick();
-  char* A = Accel();
+  //char* A = Accel();
+  char* A = "";
   char* B = Bouton();
 
   if(J != "" || A != "" || B != "")
