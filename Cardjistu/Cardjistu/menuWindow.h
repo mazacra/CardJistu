@@ -35,7 +35,6 @@ public:
 	void show_Info();
 	void show_Menu();
 	void showTurn(int i);
-	void hideP1Turn();
 	void showCardChose();
 	void toggleCard();
 
@@ -91,9 +90,6 @@ private:
 	QLabel* c2Choisi;
 	QLabel* c2PChoisi;
 	QLabel* c2EChoisi;
-
-	QList<QLabel*>* winP1;
-	QList<QLabel*>* winP2;
 
 	WinWidget* wWidget;
 	CardWidget* cWidget;

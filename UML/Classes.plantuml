@@ -6,11 +6,13 @@ class main{
 }
 
 class menuWindow{
+	- wWidget : WinWidget*
+	- cWidget : CardWidget*
     - timer : QTimer*
 	- label_Title : QLabel*
 	- label_info, label_PlayerName : QLabel* 
 	- button_P1, button_P2, button_Info: QPushButton*
-	- c1, c1P, c1E : QLabel* 
+	- c1Choisi, c1PChoisi, c1EChoisi : QLabel* 
 
 	- solo : bool
 	- game : Game*
@@ -21,22 +23,45 @@ class menuWindow{
     + menuWindow(parent : QWidget*);
 	+ ~menuWindow();
 
-	+ initButtons()
-	+ initImg()
-	+ initAction()
-	+ initLabel()
-	+ initLineEdit()
-
 	+ showP1_Options()
 	+ showP2_Options()
 	+ show_Info()
 	+ show_Menu()
+	+ showTurn(i : int)
+	+ showCardChose()
+	+ toggleCard()
 
 	+ newGame(solo : bool)
 	+ gameLoop()
 	+ createCards()
 	+ showPlayerCard(i : int)
 	+ changeSelected(last : int, newI : int)
+	+ getCardChose() : std::vector<std::string>
+}
+
+class winWidget{
+	- layout : QGridLayout*;
+	- cptFP1, cptNP1, cptEP1 : int
+	- cptFP2, cptNP2, cptEP2 : int
+
+	+ WinWidget(parent : QWidget*);
+	+ ~WinWidget();
+	+ addWin(p : int, text : const char*)
+	+ reset()
+}
+
+class cardWidget{
+	- QLabel* c1, c2, c3, c4, c5
+	- QLabel* c1P, c2P, c3P, c4P, c5P
+	- QLabel* c1E, c2E, c3E, c4E, C4E
+	- selectedStyle : const char*
+
+	+ CardWidget(parent : QWidget*);
+	+ ~CardWidget();
+	+ createCards()
+	+ showPlayerCard(l : vector<string>)
+	+ changeSelected(last : int, newI : int)
+	+ resetCard() 
 }
 
 class QWidget{
@@ -49,12 +74,23 @@ class QTimer{
 }
 class QLineEdit{
 }
+class QGridLayout{
+}
 
 main --o menuWindow
-menuWindow *-- QTimer
-menuWindow *-- QPushButton
-menuWindow *-- QLineEdit
-menuWindow *-- QLabel
+menuWindow --* QTimer
+menuWindow --* QPushButton
+menuWindow --* QLineEdit
+menuWindow --* QLabel
 menuWindow --|> QWidget
+
+winWidget *-- menuWindow
+winWidget --* QGridLayout
+winWidget --* QLabel
+
+cardWidget *-- menuWindow
+cardWidget ----* QLabel
+
+
 
 @enduml

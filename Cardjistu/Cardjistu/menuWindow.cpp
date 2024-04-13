@@ -330,10 +330,10 @@ void menuWindow::newGame()
 	game->newGame(solo);
 	showPlayerCard(activeP);
 
-	showTurn(activeP);
+	//showTurn(activeP);
 	if (!timer->isActive()) {
 		connect(timer, &QTimer::timeout, this, &menuWindow::gameLoop);
-		timer->start(60);
+		timer->start(50);
 	}
 }
 
