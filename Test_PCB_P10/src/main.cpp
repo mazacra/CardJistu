@@ -358,99 +358,59 @@ char* Accel()
 {
   if(millis() - lastAccel > 100 || lastAccel == 0){
     lastAccel = millis();
-    int i = 0;
-    int x;
-    int y;
-    int z;
 
-    while(i < 3) //Mettre un break pour sortir de la boucle
-    {
-      x = analogRead(A2);
-      y = analogRead(A3);
-      z = analogRead(A4);
+      int x = analogRead(A2);
+      int y = analogRead(A3);
+      int z = analogRead(A4);
 
       //difference
       int dx = lastX - x;
       int dy = lastY - y;
-      int dz = lastZ - z;
-
+      int dz = lastZ - z; 
       if (dx < -40) {
         //*
         //Serial.println(dx);
         //Serial.println("mouvement x vers le bas");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "mxb";
-        }
-        break;
       }else if (dx > 40){
         //*
         //Serial.println(dx);
         //Serial.println("mouvement x vers le haut");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "mxh";
-        }
-        break;
-      }
-
+      } 
       if (dy < -40) {
         //*
         //Serial.println(dy);
         //Serial.println("mouvement y vers le bas");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "myb";
-        }
-        break;
       }else if (dy > 40){
         //*
         //Serial.println(dy);
         //Serial.println("mouvement y vers le haut");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "myh";
-        }
-        break;
-      }
-
+      } 
       if (dz < -40) {
         //*
         //Serial.println(dz);
         //Serial.println("mouvement z vers le bas");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "mzb";
-        }
-        break;
       }else if (dz > 30){
         //*
         //Serial.println(dz);
         //Serial.println("mouvement z vers le haut");
         //*/
-        if(!accelActivated){
-          accelActivated = true;
           return "mzh";
-        }
-        break;
-      }
-
+      } 
       lastX = x;
       lastY = y;
       lastZ = z;
-      i++;
-      //Serial.println(i);
 
-      if(accelActivated)
-        accelActivated = false;
-    }
   return "";
-  }
 }  
 
 void readMsg()  //ajouter les output des del
