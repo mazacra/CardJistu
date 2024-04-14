@@ -32,6 +32,8 @@
 *.app
 .vscode/settings.json
 /Cardjistu/.vs/
+/Cardjistu/Cardjistu/.vs/
+/Cardjistu/Cardjistu/build/
 
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -47,3 +49,4 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+/Cardjistu/Cardjistu/.vs/cardJistuGUI/v16

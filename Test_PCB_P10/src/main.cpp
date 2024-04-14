@@ -13,15 +13,31 @@
 volatile bool shouldSend_ = false;  // Drapeau prêt à envoyer un message
 volatile bool shouldRead_ = false;
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+int cptJoystick;
+bool btnPressed;
+bool accelActivated;
+int compt = 0;
+int cptMuons = 1;
+
+int lastX = 0;
+int lastY = 0;
+int lastZ = 0;
+unsigned long lastAccel = 0;
 
 void serialEvent() { shouldRead_ = true; }
 
-void sendMsg(char* J, char* A, char* B) {
+void sendMsg(char* J = nullptr, char* A = nullptr, char* B = nullptr) {
   StaticJsonDocument<500> doc;
+
+  if(J == nullptr && A == nullptr && B == nullptr){
+    doc["Muons"] = cptMuons;
+    cptMuons = 1;
+  }else{
   // Elements du message
-  doc["bouton"] = B;
-  doc["JoyStick"] = J;
-  doc["accel"] = A;
+    doc["bouton"] = B;
+    doc["JoyStick"] = J;
+    doc["accel"] = A;
+  }
 
   // Serialisation
   serializeJson(doc, Serial);
@@ -68,22 +84,20 @@ void PrintCouleur(int couleur){
   }
 }
 
-int compt = 0;
 // put function definitions here:
 char* Bouton() {
-  bool bouton = digitalRead(38);
-  if(digitalRead(38)){
-    //Serial.println("le bouton est relevé");
-    return "";
-  }else{
-    while (!digitalRead(38))
-    {
-      /* code */
+  if(!btnPressed){
+    if(!digitalRead(38) || !digitalRead(36) || !digitalRead(34) || !digitalRead(32)){
+      btnPressed = true;
+      return "On";
     }
-    
-    //Serial.println("le bouton est enfoncé");
-    return "On";
+  }else{
+    if(digitalRead(38) && digitalRead(36) && digitalRead(34) && digitalRead(32)){
+        btnPressed = false;
+    }
   }
+
+  return "";
 }
 
 void Del(int del)
@@ -244,10 +258,10 @@ int Segment7(int chiffre){
 }
 
 char* Joystick(){
+  int lastCpt = cptJoystick;
 
   int x_Axispin = A0;
   int y_Axispin = A1;
-
 
   int xValue = analogRead(x_Axispin);
   int yValue = analogRead(y_Axispin);
@@ -256,142 +270,145 @@ char* Joystick(){
 
   if(xValue<bas and yValue<bas)
   {
-    //Serial.println("bas droite");
-    return "jbd";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
+      return "jd";
   }
 
   if(xValue<bas and yValue>=bas and yValue<=haut)
   {
-    //Serial.println("droite");
-    return "jd";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
+      return "jd";
   }
 
   if(xValue<bas and yValue>haut)
   {
-    //Serial.println("haut droite");
-    return "jhd";
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
+
+    if(cptJoystick == -1 || (cptJoystick % 100 == 0 && cptJoystick < 0))
+      return "jd";
   }
 
-  if(xValue>=bas and xValue<=haut and yValue<bas)
+  /*if(xValue>=bas and xValue<=haut and yValue<bas)
   {
-    //Serial.println("bas");
-    return "jb";
-  }
+    if(cptJoystick > 0)
+      cptJoystick = 0;
+    cptJoystick--;
 
-  if(xValue>=bas and xValue<=haut and yValue>haut)
+    if(cptJoystick == -1 || (cptJoystick % 2 == 0 && cptJoystick < 0))
+      return "jb";
+  }*/
+
+  /*if(xValue>=bas and xValue<=haut and yValue>haut)
   {
-    //Serial.println("haut");
-    return "jh";
-  }
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 2 == 0 && cptJoystick > 0))
+      return "jh";
+  }*/
 
   if(xValue>haut and yValue<bas)
   {
-    //Serial.println("bas gauche");
-    return "jbg";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
+      return "jg";
   }
 
   if(xValue>haut and yValue>=bas and yValue<=haut)
   {
-    //Serial.println("gauche");
-    return "jg";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
+      return "jg";
   }
 
   if(xValue>haut and yValue>haut)
   {
-    //Serial.println("haut gauche");
-    return "jhg";
+    if(cptJoystick < 0)
+      cptJoystick = 0;
+    cptJoystick++;
+
+    if(cptJoystick == 1 || (cptJoystick % 100 == 0 && cptJoystick > 0))
+      return "jg";
   }
 
- /* Serial.print("x:");
-  Serial.println(xValue);
-  Serial.print("y:");
-  Serial.println(yValue);*/
+  if(cptJoystick == lastCpt)
+    cptJoystick = 0;
 
   return "";
 }
 
-
 char* Accel()
 {
-  int delait = 100;
-  int x_depart = analogRead(A2);
-  int y_depart = analogRead(A3);
-  int z_depart = analogRead(A4);
-  int i = 0;
+  if(millis() - lastAccel > 100 || lastAccel == 0){
+    lastAccel = millis();
 
-  while(i < 3) //Mettre un break pour sortir de la boucle
-  {
+      int x = analogRead(A2);
+      int y = analogRead(A3);
+      int z = analogRead(A4);
 
-    int x = analogRead(A2);
-    int y = analogRead(A3);
-    int z = analogRead(A4);
-
-    //difference
-    int dx = x_depart - x;
-    int dy = y_depart - y;
-    int dz = z_depart - z;
-    
-    if (dx < -40) {
-      //*
-      //Serial.println(dx);
-      //Serial.println("mouvement x vers le bas");
-      //*/
-      delay(delait);
-      return "mxb";
-      break;
-    }else if (dx > 40){
-      //*
-      //Serial.println(dx);
-      //Serial.println("mouvement x vers le haut");
-      //*/
-      delay(delait);
-      return "mxh";
-      break;
-    }
-
-    if (dy < -40) {
-      //*
-      //Serial.println(dy);
-      //Serial.println("mouvement y vers le bas");
-      //*/
-      delay(delait);
-      return "myb";
-      break;
-    }else if (dy > 40){
-      //*
-      //Serial.println(dy);
-      //Serial.println("mouvement y vers le haut");
-      //*/
-      delay(delait);
-      return "myh";
-      break;
-    }
-
-    if (dz < -40) {
-      //*
-      //Serial.println(dz);
-      //Serial.println("mouvement z vers le bas");
-      //*/
-      delay(delait);
-      return "mzb";
-      break;
-    }else if (dz > 30){
-      //*
-      //Serial.println(dz);
-      //Serial.println("mouvement z vers le haut");
-      //*/
-      delay(delait);
-      return "mzh";
-      break;
-    }
-      x_depart = x;
-      y_depart = y;
-      z_depart = z;
-
-    delay(100);
-    i++;
-    //Serial.println(i);
-  }
+      //difference
+      int dx = lastX - x;
+      int dy = lastY - y;
+      int dz = lastZ - z; 
+      if (dx < -40) {
+        //*
+        //Serial.println(dx);
+        //Serial.println("mouvement x vers le bas");
+        //*/
+          return "mxb";
+      }else if (dx > 40){
+        //*
+        //Serial.println(dx);
+        //Serial.println("mouvement x vers le haut");
+        //*/
+          return "mxh";
+      } 
+      if (dy < -40) {
+        //*
+        //Serial.println(dy);
+        //Serial.println("mouvement y vers le bas");
+        //*/
+          return "myb";
+      }else if (dy > 40){
+        //*
+        //Serial.println(dy);
+        //Serial.println("mouvement y vers le haut");
+        //*/
+          return "myh";
+      } 
+      if (dz < -40) {
+        //*
+        //Serial.println(dz);
+        //Serial.println("mouvement z vers le bas");
+        //*/
+          return "mzb";
+      }else if (dz > 30){
+        //*
+        //Serial.println(dz);
+        //Serial.println("mouvement z vers le haut");
+        //*/
+          return "mzh";
+      } 
+      lastX = x;
+      lastY = y;
+      lastZ = z;
 
   return "";
 }  
@@ -413,6 +430,11 @@ void readMsg()  //ajouter les output des del
     return;
   }
   
+  parse_msg = doc["Muons"];
+  if(!parse_msg.isNull()){
+    sendMsg();
+  }
+
   parse_msg = doc["Element"];
   if (!parse_msg.isNull())
   {
@@ -446,6 +468,13 @@ void readMsg()  //ajouter les output des del
 
 }
 
+char* Muons(){
+  int v = analogRead(A7);
+
+  if(v > 515){
+    cptMuons++;
+  }
+}
 
 void setup() {
   Serial.begin(9600);
@@ -469,11 +498,15 @@ void setup() {
 
   lcd.init();
   lcd.backlight();
+
+  cptJoystick = 0;
+  btnPressed = false;
 }
 
 void loop() {
   char* J = Joystick();
-  char* A = Accel();
+  //char* A = Accel();
+  char* A = "";
   char* B = Bouton();
 
   if(J != "" || A != "" || B != "")
@@ -485,12 +518,4 @@ void loop() {
   if(shouldRead_){
     readMsg();
   }
-
-  while (J != "" || A != "" || B != "")
-  {
-    J = Joystick();
-    A = Accel();
-    B = Bouton();
-  }
-  
 }

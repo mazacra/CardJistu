@@ -1,50 +1,96 @@
 @startuml Classes
 left to right direction
 
-class Afficher{
-    + void MenuOuverture()
-    + void SelectionCarte()
-    + void Carte(Card Carte)
-    + void Gagnant(Player joueur)
-
+class main{
+    + int main(argc:int, argv[]:char*)
 }
 
-class Game{
-    - Player p1
-    - Player p2
+class menuWindow{
+	- wWidget : WinWidget*
+	- cWidget : CardWidget*
+    - timer : QTimer*
+	- label_Title : QLabel*
+	- label_info, label_PlayerName : QLabel* 
+	- button_P1, button_P2, button_Info: QPushButton*
+	- c1Choisi, c1PChoisi, c1EChoisi : QLabel* 
 
-    + Game(Player p1, Player p2)
-    + void BouclePrincipale()
-    + void isWinning(Player p)
-    + roundWin(Card P1Card, Card P2Card)
+	- solo : bool
+	- game : Game*
+	- winner, wp, activeP, lastActiveP, iCard, iCardP1, iCardP2 : int
+	- p1Name, p2Name : std::string
+	- selectedStyle : const char*
+
+    + menuWindow(parent : QWidget*);
+	+ ~menuWindow();
+
+	+ showP1_Options()
+	+ showP2_Options()
+	+ show_Info()
+	+ show_Menu()
+	+ showTurn(i : int)
+	+ showCardChose()
+	+ toggleCard()
+
+	+ newGame(solo : bool)
+	+ gameLoop()
+	+ createCards()
+	+ showPlayerCard(i : int)
+	+ changeSelected(last : int, newI : int)
+	+ getCardChose() : std::vector<std::string>
 }
 
-class Card{
-    - int _power
-    - int _color
-    - int _type
+class winWidget{
+	- layout : QGridLayout*;
+	- cptFP1, cptNP1, cptEP1 : int
+	- cptFP2, cptNP2, cptEP2 : int
 
-    + Card generateRandomCard()
-    + int getPower()
-    + void setPower(int p)
-    + int getColor()
-    + void setColor(int c)
-    + int getType()
-    + void setType(int t)
+	+ WinWidget(parent : QWidget*);
+	+ ~WinWidget();
+	+ addWin(p : int, text : const char*)
+	+ reset()
 }
 
-class Player{
-    - vecteur<Carte*> _deck
-    - vecteur<Carte*> _wins
+class cardWidget{
+	- QLabel* c1, c2, c3, c4, c5
+	- QLabel* c1P, c2P, c3P, c4P, c5P
+	- QLabel* c1E, c2E, c3E, c4E, C4E
+	- selectedStyle : const char*
 
-    + bool isWinning()
+	+ CardWidget(parent : QWidget*);
+	+ ~CardWidget();
+	+ createCards()
+	+ showPlayerCard(l : vector<string>)
+	+ changeSelected(last : int, newI : int)
+	+ resetCard() 
 }
 
-Player --> Card
-Game --> Player
+class QWidget{
+}
+class QLabel{
+}
+class QPushButton{
+}
+class QTimer{
+}
+class QLineEdit{
+}
+class QGridLayout{
+}
 
-Game -- Afficher
-Card -- Afficher
-Player -- Afficher
+main --o menuWindow
+menuWindow --* QTimer
+menuWindow --* QPushButton
+menuWindow --* QLineEdit
+menuWindow --* QLabel
+menuWindow --|> QWidget
+
+winWidget *-- menuWindow
+winWidget --* QGridLayout
+winWidget --* QLabel
+
+cardWidget *-- menuWindow
+cardWidget ----* QLabel
+
+
 
 @enduml
